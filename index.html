@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>%VITE_APP_NAME%</title>
+    <!-- 首帧前应用持久化主题，避免闪白；常量与 src/lib/theme.ts 保持一致 -->
+    <script>
+      (() => {
+        // 首帧同步应用名到文档标题（应用名配置见 stores/app.ts）
+        try {
+          const appRaw = localStorage.getItem("app");
+          if (appRaw) {
+            const parsed = JSON.parse(appRaw);
+            const app = parsed && typeof parsed === "object" && "state" in parsed ? parsed.state : parsed;
+            if (app && app.appName) document.title = app.appName;
+          }
+        } catch {
+          // 忽略损坏的应用配置
+        }
+
+        try {
+          const raw = localStorage.getItem("theme");
+          let data = {};
+          if (raw === "light" || raw === "dark") {
+            data = { mode: raw };
+          } else if (raw) {
+            const parsed = JSON.parse(raw);
+            // zustand persist 格式为 { state, version }，同时兼容旧的裸配置
+            data = parsed && typeof parsed === "object" && "state" in parsed ? parsed.state || {} : parsed;
+          }
+
+          const mode = data.mode || "system";
+          const dark = mode === "dark" || (mode === "system" && matchMedia("(prefers-color-scheme: dark)").matches);
+          const root = document.documentElement;
+
+          root.classList.toggle("dark", dark);
+          if (data.preset && data.preset !== "neutral") root.dataset.theme = data.preset;
+          root.style.colorScheme = dark ? "dark" : "light";
+          if (typeof data.radius === "number") root.style.setProperty("--radius", data.radius + "rem");
+          if (typeof data.border === "number") root.style.setProperty("--border-strength", String(data.border));
+          if (typeof data.fontSize === "number") root.style.fontSize = data.fontSize + "px";
+          root.dataset.motion = data.motion === "reduced" ? "reduced" : "full";
+          root.dataset.pageTransition = data.pageTransition || "slide";
+          if (typeof data.motionDuration === "number") {
+            root.style.setProperty("--motion-duration", data.motionDuration + "ms");
+          }
+          const easings = {
+            "ease-out": "ease-out",
+            "ease-in-out": "ease-in-out",
+            linear: "linear",
+            spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
+          };
+          if (easings[data.motionEasing]) root.style.setProperty("--motion-ease", easings[data.motionEasing]);
+
+          const fontStacks = {
+            geist: '"Geist Variable", ui-sans-serif, system-ui, sans-serif',
+            sans: 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
+            serif: 'ui-serif, Georgia, "Times New Roman", serif',
+            mono: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+          };
+          if (fontStacks[data.font]) root.style.setProperty("--app-font", fontStacks[data.font]);
+
+          if (data.surface) {
+            root.style.setProperty("--surface-h", String(data.surface.hue));
+            root.style.setProperty("--surface-c", (data.surface.strength * 0.03).toFixed(4));
+          }
+          if (data.accent) {
+            root.style.setProperty("--accent-h", String(data.accent.hue));
+            root.style.setProperty("--accent-c", (data.accent.strength * 0.08).toFixed(4));
+          }
+
+          const primary =
+            data.primary
+            || (data.custom && typeof data.custom.chroma === "number"
+              ? { hue: data.custom.hue, strength: data.custom.chroma / 0.3 }
+              : null);
+          const presetHue =
+            {
+              neutral: 250,
+              blue: 260,
+              indigo: 275,
+              violet: 300,
+              emerald: 160,
+              cyan: 200,
+              amber: 65,
+              orange: 45,
+              rose: 15,
+            }[data.preset] || 250;
+          root.style.setProperty(
+            "--chart-h",
+            String(primary && typeof primary.hue === "number" ? primary.hue : presetHue),
+          );
+
+          if (primary && typeof primary.hue === "number" && typeof primary.strength === "number") {
+            const lightness = dark ? 0.7 : 0.51 - Math.max(0, primary.strength - 0.5) * 0.12;
+            const color = `oklch(${lightness} ${primary.strength * 0.3} ${primary.hue})`;
+            const foreground = dark ? "oklch(0.16 0 0)" : "oklch(0.985 0 0)";
+            for (const name of ["--primary", "--ring", "--sidebar-primary", "--sidebar-ring"]) {
+              root.style.setProperty(name, color);
+            }
+            for (const name of ["--primary-foreground", "--sidebar-primary-foreground"]) {
+              root.style.setProperty(name, foreground);
+            }
+          }
+        } catch {
+          // 存储不可用时回落到样式表中的默认主题
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,354 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource-variable/geist";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-heading: var(--app-font);
+  --font-sans: var(--app-font);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-overlay: var(--overlay);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* 界面色调 / 强调色的运行时变量（由主题 store 内联覆盖） */
+  --app-font: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --border-strength: 0.4;
+  --motion-duration: 200ms;
+  --motion-ease: ease-out;
+  --surface-h: 250;
+  --surface-c: 0.0045;
+  --accent-h: 250;
+  --accent-c: 0.004;
+  --chart-h: 250;
+  --overlay: oklch(0 0 0 / 10%);
+
+  --background: oklch(0.999 calc(var(--surface-c) * 0.25) var(--surface-h));
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 calc(var(--surface-c) * 0.6) var(--surface-h));
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 calc(var(--surface-c) * 0.6) var(--surface-h));
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.96 var(--accent-c) var(--accent-h));
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(calc(0.95 - var(--border-strength) * 0.06) calc(var(--surface-c) * 0.8) var(--surface-h));
+  --input: oklch(calc(0.95 - var(--border-strength) * 0.06) calc(var(--surface-c) * 0.8) var(--surface-h));
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.58 0.18 var(--chart-h));
+  --chart-2: oklch(0.62 0.16 calc(var(--chart-h) + 50));
+  --chart-3: oklch(0.55 0.15 calc(var(--chart-h) + 110));
+  --chart-4: oklch(0.66 0.14 calc(var(--chart-h) + 180));
+  --chart-5: oklch(0.6 0.17 calc(var(--chart-h) + 250));
+  --radius: 0.625rem;
+  --sidebar: oklch(0.966 var(--surface-c) var(--surface-h));
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.932 var(--accent-c) var(--accent-h));
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(calc(0.93 - var(--border-strength) * 0.06) calc(var(--surface-c) * 1.2) var(--surface-h));
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 calc(var(--surface-c) * 0.5) var(--surface-h));
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 calc(var(--surface-c) * 0.5) var(--surface-h));
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 calc(var(--surface-c) * 0.5) var(--surface-h));
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 calc(var(--surface-c) * 0.7) var(--surface-h));
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 calc(var(--surface-c) * 0.7) var(--surface-h));
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.3 var(--accent-c) var(--accent-h));
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(0.96 calc(var(--surface-c) * 0.8) var(--surface-h) / calc(4% + var(--border-strength) * 20%));
+  --input: oklch(0.96 calc(var(--surface-c) * 0.8) var(--surface-h) / calc(10% + var(--border-strength) * 20%));
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.72 0.15 var(--chart-h));
+  --chart-2: oklch(0.7 0.13 calc(var(--chart-h) + 50));
+  --chart-3: oklch(0.68 0.12 calc(var(--chart-h) + 110));
+  --chart-4: oklch(0.75 0.12 calc(var(--chart-h) + 180));
+  --chart-5: oklch(0.7 0.14 calc(var(--chart-h) + 250));
+  --overlay: oklch(0 0 0 / 45%);
+  --sidebar: oklch(0.205 calc(var(--surface-c) * 0.6) var(--surface-h));
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 var(--accent-c) var(--accent-h));
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.96 calc(var(--surface-c) * 0.8) var(--surface-h) / calc(4% + var(--border-strength) * 20%));
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* ---------- 主题色板：运行时通过 html[data-theme] 切换，neutral 不加属性 ---------- */
+
+/* 色板基色：token 与设置面板色点共用同一来源 */
+:root {
+  --preset-neutral: oklch(0.205 0 0);
+  --preset-blue: oklch(0.55 0.2 260);
+  --preset-indigo: oklch(0.55 0.21 275);
+  --preset-violet: oklch(0.55 0.22 300);
+  --preset-emerald: oklch(0.52 0.15 160);
+  --preset-cyan: oklch(0.5 0.14 200);
+  --preset-amber: oklch(0.55 0.14 65);
+  --preset-orange: oklch(0.55 0.17 45);
+  --preset-rose: oklch(0.55 0.18 15);
+}
+
+/* 浅色：饱和主色 + 白色前景；暗色：提亮主色 + 深色前景 */
+[data-theme="blue"] {
+  --theme-color: var(--preset-blue);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="indigo"] {
+  --theme-color: var(--preset-indigo);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="violet"] {
+  --theme-color: var(--preset-violet);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="emerald"] {
+  --theme-color: var(--preset-emerald);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="cyan"] {
+  --theme-color: var(--preset-cyan);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="amber"] {
+  --theme-color: var(--preset-amber);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="orange"] {
+  --theme-color: var(--preset-orange);
+  --theme-fg: oklch(0.985 0 0);
+}
+[data-theme="rose"] {
+  --theme-color: var(--preset-rose);
+  --theme-fg: oklch(0.985 0 0);
+}
+
+.dark[data-theme="blue"] {
+  --theme-color: oklch(0.7 0.16 260);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="indigo"] {
+  --theme-color: oklch(0.7 0.17 275);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="violet"] {
+  --theme-color: oklch(0.7 0.17 300);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="emerald"] {
+  --theme-color: oklch(0.7 0.13 160);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="cyan"] {
+  --theme-color: oklch(0.72 0.13 200);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="amber"] {
+  --theme-color: oklch(0.79 0.15 75);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="orange"] {
+  --theme-color: oklch(0.72 0.17 45);
+  --theme-fg: oklch(0.16 0 0);
+}
+.dark[data-theme="rose"] {
+  --theme-color: oklch(0.7 0.17 15);
+  --theme-fg: oklch(0.16 0 0);
+}
+
+/* 色板生效时统一覆盖品牌类 token；自定义主色走内联变量，优先级更高 */
+[data-theme] {
+  --primary: var(--theme-color);
+  --primary-foreground: var(--theme-fg);
+  --ring: var(--theme-color);
+  --sidebar-primary: var(--theme-color);
+  --sidebar-primary-foreground: var(--theme-fg);
+  --sidebar-ring: var(--theme-color);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+    font-family: var(--app-font);
+  }
+}
+
+/* 装饰性漂浮动画（首页装饰块用，配 motion-reduce:animate-none） */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+/* 用户主动开启「减少动效」时，全局关闭动画与过渡（优先于组件内动效） */
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* 侧边栏的展开/收起沿用同一套动效时长与缓动 */
+[data-slot="sidebar-gap"],
+[data-slot="sidebar-container"] {
+  transition-duration: var(--motion-duration);
+  transition-timing-function: var(--motion-ease);
+}
+
+/* Accordion / Collapsible 使用 CSS transition（与 Base UI 的测量机制一致），时长/缓动跟随动效配置 */
+[data-slot="accordion-content"],
+[data-slot="collapsible-content"] {
+  transition-duration: var(--motion-duration);
+  transition-timing-function: var(--motion-ease);
+}
+
+/* 内容区背景纹理：只影响滚动容器背景，卡片仍保持不透明 */
+[data-pattern="dots"] {
+  background-image: radial-gradient(color-mix(in oklab, var(--border) 55%, transparent) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+[data-pattern="grid"] {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--border) 45%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* 顶栏磨砂玻璃：中性色、全宽、无品牌色偏移 */
+.glass-header {
+  /* 中性灰调 + 半透明：不引入品牌色，避免变成彩色条 */
+  background-color: color-mix(
+    in oklab,
+    color-mix(in oklab, var(--background) 97%, var(--foreground) 3%) 55%,
+    transparent
+  );
+  background-image: linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 3%, transparent), transparent 65%);
+  backdrop-filter: blur(20px) saturate(150%);
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--foreground) 5%, transparent);
+}
+
+.glass-header.shadow-sm {
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 5%, transparent),
+    0 1px 2px color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+
+/* 滚动条：透明轨道 + 细胶囊滑块；悬停容器时加深，悬停滑块时再加深 */
+:root {
+  --scrollbar-thumb: color-mix(in oklab, var(--foreground) 9%, transparent);
+  --scrollbar-thumb-active: color-mix(in oklab, var(--foreground) 22%, transparent);
+  --scrollbar-thumb-hover: color-mix(in oklab, var(--foreground) 30%, transparent);
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 9999px;
+}
+
+/* 鼠标进入滚动容器时，滚动条稍微显形 */
+*:hover::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-active);
+}
+
+/* 悬停滑块本身时最清晰 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button {
+  background: transparent;
+  display: none;
+}
+
+/* Firefox 只支持标准属性，单独降级 */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
+}
+
+/* 需要固定滚动槽的容器（如 MessageScroller） */
+.scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
