@@ -86,6 +86,7 @@
   --chart-4: oklch(0.66 0.14 calc(var(--chart-h) + 180));
   --chart-5: oklch(0.6 0.17 calc(var(--chart-h) + 250));
   --radius: 0.625rem;
+  --radius-control: 4px;
   --sidebar: oklch(0.966 var(--surface-c) var(--surface-h));
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);

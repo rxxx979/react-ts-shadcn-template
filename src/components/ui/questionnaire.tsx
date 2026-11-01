@@ -20,7 +20,7 @@ function QuestionnaireProgress({ className, ...props }: ComponentProps<typeof Qu
   return (
     <QuestionnairePrimitive.Progress
       data-slot="questionnaire-progress"
-      className={cn("min-h-[1lh] w-fit min-w-[14ch] text-xs font-medium text-muted-foreground tabular-nums", className)}
+      className={cn("min-h-lh w-fit min-w-[14ch] text-xs font-medium text-muted-foreground tabular-nums", className)}
       {...props}
     />
   );
@@ -87,7 +87,7 @@ function QuestionnaireChoice({ children, className, ...props }: ComponentProps<t
       <span
         aria-hidden="true"
         data-slot="questionnaire-choice-indicator"
-        className="border-input group-data-checked/questionnaire-choice:border-primary group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground dark:bg-input/30 dark:group-data-checked/questionnaire-choice:bg-primary pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-[4px] border group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[type=radio]/questionnaire-choice:rounded-full"
+        className="border-input group-data-checked/questionnaire-choice:border-primary group-data-checked/questionnaire-choice:bg-primary group-data-checked/questionnaire-choice:text-primary-foreground dark:bg-input/30 dark:group-data-checked/questionnaire-choice:bg-primary pointer-events-none relative flex size-4 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-(--radius-control) border group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[type=radio]/questionnaire-choice:rounded-full"
       >
         <span
           data-slot="questionnaire-choice-indicator-dot"
@@ -106,7 +106,7 @@ function QuestionnaireChoice({ children, className, ...props }: ComponentProps<t
       </QuestionnairePrimitive.ChoiceLabel>
       <QuestionnairePrimitive.ChoiceShortcut
         data-slot="questionnaire-choice-shortcut"
-        className="border-input bg-background text-muted-foreground pointer-events-none ms-auto hidden size-5 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-md border font-mono text-[0.625rem] leading-none font-medium group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-[shortcut]/questionnaire-choice:inline-flex"
+        className="border-input bg-background text-muted-foreground pointer-events-none ms-auto hidden size-5 shrink-0 translate-y-[--spacing(0.45)] items-center justify-center rounded-md border font-mono text-[0.625rem] leading-none font-medium group-has-data-[slot=questionnaire-choice-description]/questionnaire-choice:translate-y-0.5 group-data-shortcut/questionnaire-choice:inline-flex"
       />
     </QuestionnairePrimitive.Choice>
   );

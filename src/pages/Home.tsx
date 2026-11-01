@@ -50,14 +50,14 @@ const Home = () => {
       {(x > 0 || y > 0) && (
         <div
           aria-hidden
-          className="pointer-events-none absolute size-[420px] rounded-full opacity-60 blur-3xl"
+          className="pointer-events-none absolute size-105 rounded-full opacity-60 blur-3xl"
           style={getGlowStyle(x, y)}
         />
       )}
 
       {/* 中心排印 */}
       <div className="relative flex flex-col items-center gap-5 text-center">
-        <h1 className="from-foreground to-foreground/25 bg-gradient-to-b bg-clip-text text-6xl font-semibold tracking-tight text-transparent md:text-7xl">
+        <h1 className="from-foreground to-foreground/25 bg-linear-to-b bg-clip-text text-6xl font-semibold tracking-tight text-transparent md:text-7xl">
           {appName}
         </h1>
         <div className="text-muted-foreground flex items-center gap-3 text-xs tracking-[0.5em]">

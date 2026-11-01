@@ -12,12 +12,12 @@ const componentsLink = <Link to="/components" />;
  */
 const NotFound = () => (
   <div className="bg-card relative flex min-h-full flex-1 flex-col items-center justify-center overflow-hidden rounded-xl border px-6 py-24 text-center">
-    <div className="pointer-events-none absolute inset-0 [background-image:radial-gradient(circle,var(--border)_1px,transparent_1px)] [background-size:18px_18px] opacity-40" />
+    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,var(--border)_1px,transparent_1px)] bg-size-[18px_18px] opacity-40" />
     <div className="bg-primary/10 pointer-events-none absolute top-1/3 left-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
 
     <div className="relative flex flex-col items-center">
       <p className="text-muted-foreground font-mono text-[11px] tracking-[0.28em] uppercase">404 / Not Found</p>
-      <h1 className="from-foreground to-foreground/10 mt-3 bg-gradient-to-b bg-clip-text text-[7rem] leading-none font-semibold tracking-[-0.08em] text-transparent sm:text-[9rem]">
+      <h1 className="from-foreground to-foreground/10 mt-3 bg-linear-to-b bg-clip-text text-[7rem] leading-none font-semibold tracking-[-0.08em] text-transparent sm:text-[9rem]">
         404
       </h1>
       <p className="text-muted-foreground mt-5 max-w-md text-sm leading-relaxed">

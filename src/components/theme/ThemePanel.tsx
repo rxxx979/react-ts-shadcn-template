@@ -834,7 +834,7 @@ const ThemePanel = () => {
         <OverlayScrollbar targetRef={controlsRef} />
       </div>
 
-      <SheetFooter className="after:from-border/70 after:via-border/40 relative flex-row gap-2 px-4 py-3 after:pointer-events-none after:absolute after:top-0 after:right-2 after:left-0 after:h-px after:bg-gradient-to-r after:to-transparent">
+      <SheetFooter className="after:from-border/70 after:via-border/40 relative flex-row gap-2 px-4 py-3 after:pointer-events-none after:absolute after:top-0 after:right-2 after:left-0 after:h-px after:bg-linear-to-r after:to-transparent">
         <Button variant="outline" size="sm" className="flex-1" onClick={() => reset()}>
           <RotateCcwIcon />
           恢复默认

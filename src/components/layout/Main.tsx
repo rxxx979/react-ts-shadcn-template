@@ -77,7 +77,7 @@ const Main = () => {
       {isHome && pattern === "none" && (
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 z-0 [background-image:radial-gradient(var(--border)_1px,transparent_1px)] [background-size:24px_24px] opacity-40"
+          className="pointer-events-none absolute inset-0 z-0 bg-[radial-gradient(var(--border)_1px,transparent_1px)] bg-size-[24px_24px] opacity-40"
         />
       )}
       <div
@@ -89,7 +89,7 @@ const Main = () => {
           <div
             className={cn(
               "flex min-h-0 flex-1 flex-col gap-6",
-              contentWidth === "boxed" && !isHome && "mx-auto w-full max-w-[1440px]",
+              contentWidth === "boxed" && !isHome && "mx-auto w-full max-w-360",
             )}
           >
             <Outlet />
