@@ -22,6 +22,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useNavigation } from "@/hooks/use-navigation";
 import { useAppStore } from "@/stores/app";
 
 import { NavMain } from "./NavMain";
@@ -89,6 +90,7 @@ const Aside = ({ onOpenCommand, ...props }: AsideProps) => {
   const appName = useAppStore((state) => state.appName) || "Shadcn Admin";
   const appTagline = useAppStore((state) => state.appTagline);
   const showSidebarFooter = useAppStore((state) => state.showSidebarFooter);
+  const navigation = useNavigation();
 
   return (
     <Sidebar variant="inset" collapsible="icon" {...props}>
@@ -119,7 +121,7 @@ const Aside = ({ onOpenCommand, ...props }: AsideProps) => {
         </button>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={buildNavItems()} />
+        <NavMain items={buildNavItems(navigation)} />
       </SidebarContent>
       {showSidebarFooter && (
         <SidebarFooter>

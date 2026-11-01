@@ -1,7 +1,6 @@
-import { createElement } from "react";
 import type { ReactNode } from "react";
 
-import { NAV_ENTRIES } from "@/config/navigation";
+import type { NavigationEntry } from "@/router/navigation";
 
 /**
  * 菜单项：导航渲染的数据契约
@@ -50,11 +49,11 @@ interface NavSection {
  *
  * @returns 菜单项列表
  */
-const buildNavItems = (): NavItem[] =>
-  NAV_ENTRIES.map((entry) => ({
+const buildNavItems = (entries: readonly NavigationEntry[]): NavItem[] =>
+  entries.map((entry) => ({
     title: entry.title,
     url: entry.path,
-    icon: createElement(entry.icon),
+    icon: entry.icon,
   }));
 
 /**

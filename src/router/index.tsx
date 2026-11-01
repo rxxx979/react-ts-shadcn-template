@@ -1,14 +1,14 @@
+import { BoxesIcon, ComponentIcon, HomeIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { Suspense, createElement } from "react";
+import { Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import type { RouteObject } from "react-router";
 
 import { Layout } from "@/components/layout/Layout";
-import { NAVIGATION } from "@/config/navigation";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 
-import { ComponentsPage, PageFallback, StackPage } from "./Lazy";
+import { ComponentsPage, PageFallback, StackPage } from "./lazy";
 
 /**
  * 路由元信息：驱动侧边栏菜单与面包屑（见 layout/Menu.ts 的转换规则）
@@ -50,9 +50,9 @@ const routes: RouteItem[] = [
         index: true,
         element: <Home />,
         handle: {
-          title: NAVIGATION.home.title,
-          breadcrumb: NAVIGATION.home.breadcrumb,
-          icon: createElement(NAVIGATION.home.icon),
+          title: "首页",
+          breadcrumb: "首页",
+          icon: <HomeIcon />,
         },
       },
       {
@@ -64,9 +64,9 @@ const routes: RouteItem[] = [
           </Suspense>
         ),
         handle: {
-          title: NAVIGATION.components.title,
-          breadcrumb: NAVIGATION.components.breadcrumb,
-          icon: createElement(NAVIGATION.components.icon),
+          title: "组件",
+          breadcrumb: "组件",
+          icon: <ComponentIcon />,
         },
       },
       {
@@ -78,9 +78,9 @@ const routes: RouteItem[] = [
           </Suspense>
         ),
         handle: {
-          title: NAVIGATION.stack.title,
-          breadcrumb: NAVIGATION.stack.breadcrumb,
-          icon: createElement(NAVIGATION.stack.icon),
+          title: "技术栈",
+          breadcrumb: "技术栈",
+          icon: <BoxesIcon />,
         },
       },
       {

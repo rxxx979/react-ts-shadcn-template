@@ -1,13 +1,4 @@
-import {
-  BoxesIcon,
-  ComponentIcon,
-  HomeIcon,
-  MonitorIcon,
-  MoonIcon,
-  PaletteIcon,
-  PanelLeftIcon,
-  SunIcon,
-} from "lucide-react";
+import { MonitorIcon, MoonIcon, PaletteIcon, PanelLeftIcon, SunIcon } from "lucide-react";
 import { useNavigate } from "react-router";
 
 import {
@@ -21,6 +12,7 @@ import {
   CommandShortcut,
 } from "@/components/ui/command";
 import { Kbd } from "@/components/ui/kbd";
+import { useNavigation } from "@/hooks/use-navigation";
 import { useLayoutStore } from "@/stores/layout";
 import { useThemeStore } from "@/stores/theme";
 
@@ -34,6 +26,7 @@ interface CommandPaletteProps {
  */
 const CommandPalette = ({ open, onOpenChange }: CommandPaletteProps) => {
   const navigate = useNavigate();
+  const navigation = useNavigation();
   const mode = useThemeStore((state) => state.mode);
   const setMode = useThemeStore((state) => state.setMode);
   const setPanelOpen = useThemeStore((state) => state.setPanelOpen);
@@ -65,18 +58,12 @@ const CommandPalette = ({ open, onOpenChange }: CommandPaletteProps) => {
         <CommandEmpty>没有找到匹配项。</CommandEmpty>
 
         <CommandGroup heading="页面">
-          <CommandItem value="首页 home" onSelect={() => go("/")}>
-            <HomeIcon />
-            首页
-          </CommandItem>
-          <CommandItem value="组件 components" onSelect={() => go("/components")}>
-            <ComponentIcon />
-            组件库
-          </CommandItem>
-          <CommandItem value="技术栈 stack dependencies" onSelect={() => go("/stack")}>
-            <BoxesIcon />
-            技术栈
-          </CommandItem>
+          {navigation.map((entry) => (
+            <CommandItem key={entry.path} value={`${entry.title} ${entry.path}`} onSelect={() => go(entry.path)}>
+              {entry.icon}
+              {entry.title}
+            </CommandItem>
+          ))}
         </CommandGroup>
 
         <CommandSeparator />
