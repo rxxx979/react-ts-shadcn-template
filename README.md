@@ -128,7 +128,10 @@ src/
 ├── main.tsx
 ├── router/
 │   ├── index.tsx
-│   └── Lazy.tsx
+│   ├── lazy.tsx
+│   ├── navigation.ts
+│   ├── navigation-context.ts
+│   └── NavigationProvider.tsx
 ├── pages/
 │   ├── Home.tsx
 │   ├── Components.tsx
@@ -139,7 +142,6 @@ src/
 │   ├── layout/
 │   ├── theme/
 │   └── ui/
-├── config/
 ├── hooks/
 ├── lib/
 ├── stores/
