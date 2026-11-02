@@ -1,7 +1,8 @@
 import { cn } from "cn";
-import { useLayoutEffect, useRef } from "react";
+import { Suspense, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
 
+import { PageFallback } from "@/components/layout/PageFallback";
 import { OverlayScrollbar } from "@/components/OverlayScrollbar";
 import { getEasingValue } from "@/lib/theme";
 import type { PageTransition } from "@/lib/theme";
@@ -23,6 +24,8 @@ const PAGE_ANIMATIONS: Record<PageTransition, Keyframe[]> = {
   ],
   none: [],
 };
+
+const PAGE_FALLBACK = <PageFallback />;
 
 /**
  * 内容区：子路由出口（页面定位由顶栏面包屑承担，不再渲染标题）
@@ -92,7 +95,9 @@ const Main = () => {
               contentWidth === "boxed" && !isHome && "mx-auto w-full max-w-360",
             )}
           >
-            <Outlet />
+            <Suspense fallback={PAGE_FALLBACK}>
+              <Outlet />
+            </Suspense>
           </div>
         </div>
       </div>

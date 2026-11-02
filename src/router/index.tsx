@@ -1,6 +1,5 @@
 import { BoxesIcon, ComponentIcon, HomeIcon, RadioIcon } from "lucide-react";
 import type { ReactNode } from "react";
-import { Suspense } from "react";
 import { createBrowserRouter } from "react-router";
 import type { RouteObject } from "react-router";
 
@@ -8,7 +7,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 
-import { ComponentsPage, PageFallback, SsePage, StackPage } from "./lazy";
+import { ComponentsPage, SsePage, StackPage } from "./lazy";
 
 /**
  * 路由元信息：驱动侧边栏菜单与面包屑（见 layout/Menu.ts 的转换规则）
@@ -58,11 +57,7 @@ const routes: RouteItem[] = [
       {
         id: "Components",
         path: "components",
-        element: (
-          <Suspense fallback={<PageFallback />}>
-            <ComponentsPage />
-          </Suspense>
-        ),
+        element: <ComponentsPage />,
         handle: {
           title: "组件",
           breadcrumb: "组件",
@@ -72,11 +67,7 @@ const routes: RouteItem[] = [
       {
         id: "Stack",
         path: "stack",
-        element: (
-          <Suspense fallback={<PageFallback />}>
-            <StackPage />
-          </Suspense>
-        ),
+        element: <StackPage />,
         handle: {
           title: "技术栈",
           breadcrumb: "技术栈",
@@ -86,11 +77,7 @@ const routes: RouteItem[] = [
       {
         id: "Sse",
         path: "sse",
-        element: (
-          <Suspense fallback={<PageFallback />}>
-            <SsePage />
-          </Suspense>
-        ),
+        element: <SsePage />,
         handle: {
           title: "实时流",
           breadcrumb: "实时流",
