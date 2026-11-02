@@ -70,5 +70,9 @@
     "*.{json,jsonc,css,md,mdx}": [
       "oxfmt --write"
     ]
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "pnpm": ">=12"
   }
 }
