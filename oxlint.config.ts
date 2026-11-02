@@ -260,6 +260,13 @@ export default defineConfig({
       },
     },
     {
+      // TanStack Table / Virtual 返回不可 memo 的函数；React Compiler 会跳过这些组件，告警属预期
+      files: ["src/hooks/use-virtual-rows.ts", "src/pages/Projects.tsx"],
+      rules: {
+        "react/incompatible-library": "off",
+      },
+    },
+    {
       // 工具配置文件必须使用 default export
       files: ["vite.config.ts", "oxfmt.config.ts", "oxlint.config.ts"],
       rules: {
