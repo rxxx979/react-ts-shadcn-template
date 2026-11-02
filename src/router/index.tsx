@@ -1,13 +1,14 @@
-import { BoxesIcon, ComponentIcon, HomeIcon, RadioIcon } from "lucide-react";
+import { BoxesIcon, ComponentIcon, FolderKanbanIcon, HomeIcon, RadioIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { createBrowserRouter } from "react-router";
 import type { RouteObject } from "react-router";
 
 import { Layout } from "@/components/layout/Layout";
+import { RootError } from "@/components/layout/RootError";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 
-import { ComponentsPage, SsePage, StackPage } from "./lazy";
+import { ComponentsPage, ProjectsPage, SsePage, StackPage } from "./lazy";
 
 /**
  * 路由元信息：驱动侧边栏菜单与面包屑（见 layout/Menu.ts 的转换规则）
@@ -43,6 +44,7 @@ const routes: RouteItem[] = [
   {
     path: "/",
     element: <Layout />,
+    errorElement: <RootError />,
     children: [
       {
         id: "Home",
@@ -52,6 +54,16 @@ const routes: RouteItem[] = [
           title: "首页",
           breadcrumb: "首页",
           icon: <HomeIcon />,
+        },
+      },
+      {
+        id: "Projects",
+        path: "projects",
+        element: <ProjectsPage />,
+        handle: {
+          title: "项目",
+          breadcrumb: "项目",
+          icon: <FolderKanbanIcon />,
         },
       },
       {

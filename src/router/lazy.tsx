@@ -9,6 +9,14 @@ const ComponentsPage = lazy(async () => {
 });
 
 /**
+ * 懒加载的项目列表页面
+ */
+const ProjectsPage = lazy(async () => {
+  const module = await import("@/pages/Projects");
+  return { default: module.Projects };
+});
+
+/**
  * 懒加载的技术栈页面
  */
 const StackPage = lazy(async () => {
@@ -24,4 +32,4 @@ const SsePage = lazy(async () => {
   return { default: module.Sse };
 });
 
-export { ComponentsPage, SsePage, StackPage };
+export { ComponentsPage, ProjectsPage, SsePage, StackPage };

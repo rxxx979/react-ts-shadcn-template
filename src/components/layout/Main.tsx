@@ -2,6 +2,8 @@ import { cn } from "cn";
 import { Suspense, useLayoutEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
 
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PageError } from "@/components/layout/PageError";
 import { PageFallback } from "@/components/layout/PageFallback";
 import { OverlayScrollbar } from "@/components/OverlayScrollbar";
 import { getEasingValue } from "@/lib/theme";
@@ -26,6 +28,7 @@ const PAGE_ANIMATIONS: Record<PageTransition, Keyframe[]> = {
 };
 
 const PAGE_FALLBACK = <PageFallback />;
+const PAGE_ERROR = <PageError />;
 
 /**
  * 内容区：子路由出口（页面定位由顶栏面包屑承担，不再渲染标题）
@@ -95,9 +98,11 @@ const Main = () => {
               contentWidth === "boxed" && !isHome && "mx-auto w-full max-w-360",
             )}
           >
-            <Suspense fallback={PAGE_FALLBACK}>
-              <Outlet />
-            </Suspense>
+            <ErrorBoundary key={pathname} fallback={PAGE_ERROR}>
+              <Suspense fallback={PAGE_FALLBACK}>
+                <Outlet />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         </div>
       </div>
