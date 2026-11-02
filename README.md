@@ -31,6 +31,10 @@ Most admin templates give you a layout and a handful of pages. This one focuses 
 - **No theme flash** — a pre-paint bootstrap script applies persisted theme settings before React mounts
 - **Command palette** — search pages and actions with `⌘K`
 - **Component gallery** — a browsable showcase of the included shadcn/Base UI components
+- **CRUD example** — a typed project list with search, filters, create, edit and delete flows
+- **SSE lab** — a typed streaming demo built on the same request and schema conventions
+- **Error boundaries** — page and application fallbacks instead of a blank screen
+- **Validated environment** — app name and API base URI are checked at startup
 - **Thoughtful defaults** — overlay scrollbars, reduced-motion support, responsive layout and keyboard shortcuts
 - **Typed request layer** — a small `request` client and `useRequest` hook with race/cancel handling
 - **Strict tooling** — Oxlint (type-aware), Oxfmt, Husky and lint-staged
@@ -52,7 +56,7 @@ Most admin templates give you a layout and a handful of pages. This one focuses 
 ## Requirements
 
 - Node.js `^20.19.0 || >=22.12.0`
-- pnpm 10+
+- pnpm 12+
 
 ## Quick Start
 
@@ -105,6 +109,8 @@ cp .env.example .env
 
 `.env` is ignored by Git. The template ships with `.env.example` only.
 
+Environment values are validated at startup with Zod. Invalid values fail fast instead of surfacing later as a broken request URL.
+
 Application name, theme and layout can also be changed at runtime from the appearance panel; settings are persisted in `localStorage`.
 
 ## Scripts
@@ -134,6 +140,7 @@ src/
 │   └── NavigationProvider.tsx
 ├── pages/
 │   ├── Home.tsx
+│   ├── Projects.tsx
 │   ├── Components.tsx
 │   ├── Stack.tsx
 │   ├── Sse.tsx
@@ -153,7 +160,7 @@ src/
 - `components/layout/` — application shell, sidebar, header, footer
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
-- `lib/` — request, SSE, theme helpers and shared types
+- `lib/` — request, SSE, project mock service, theme helpers and shared types
 - `stores/` — persisted Zustand stores for theme, layout and app settings
 
 ## Theme System
@@ -182,13 +189,49 @@ const projects = await request<Project[]>("/projects", {
 
 It handles the base URI, query serialization, JSON bodies, `Result` unwrapping and `ApiError`.
 
-`src/hooks/use-request.ts` adds a hook for React:
+`src/hooks/use-request.ts` adds a hook for React. It supports three forms.
+
+### Endpoint descriptor
 
 ```ts
-const { data, loading, error, refresh, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
+import { defineEndpoint, useRequest } from "@/hooks/use-request";
+
+interface Project {
+  id: string;
+  name: string;
+}
+
+const listProjects = defineEndpoint<Record<string, never>, never, Project[]>({
+  method: "get",
+  url: "/projects",
+});
+
+const { data, loading, refresh } = useRequest(listProjects);
+```
+
+### URL + response type
+
+```ts
+const { data } = useRequest<Project[]>("/projects", {
+  query: { page: 1, pageSize: 20 },
+});
+```
+
+### Custom service
+
+```ts
+const { data, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
 ```
 
 The hook manages `data / loading / error`, ignores stale responses, aborts in-flight requests on unmount and exposes `run`, `refresh`, `cancel` and `mutate`.
+
+## Error Handling
+
+- `components/ErrorBoundary.tsx` catches render and lazy chunk failures
+- `components/layout/PageError.tsx` keeps the layout shell and offers a retry
+- `components/layout/RootError.tsx` covers application-level failures
+- the root route also has an `errorElement`
+- environment variables are validated before the app renders
 
 ## Git Hooks
 

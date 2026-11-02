@@ -52,7 +52,7 @@
 ## 环境要求
 
 - Node.js `^20.19.0 || >=22.12.0`
-- pnpm 10+
+- pnpm 12+
 
 ## 快速开始
 
@@ -132,6 +132,7 @@ src/
 │   └── NavigationProvider.tsx
 ├── pages/
 │   ├── Home.tsx
+│   ├── Projects.tsx
 │   ├── Components.tsx
 │   ├── Stack.tsx
 │   ├── Sse.tsx
@@ -151,7 +152,7 @@ src/
 - `components/layout/` — 应用壳层、侧边栏、顶栏、页脚
 - `components/theme/` — 主题与外观面板
 - `components/ui/` — shadcn registry 组件
-- `lib/` — 请求、主题工具与共享类型
+- `lib/` — 请求、SSE、项目 mock service、主题工具与共享类型
 - `stores/` — 主题、布局与应用设置的持久化 Zustand store
 
 ## 主题系统
@@ -180,13 +181,49 @@ const projects = await request<Project[]>("/projects", {
 
 它处理基础 URI、query 序列化、JSON body、`Result` 解包与 `ApiError`。
 
-`src/hooks/use-request.ts` 提供 React Hook：
+`src/hooks/use-request.ts` 提供 React Hook，支持三种形式。
+
+### Endpoint descriptor
 
 ```ts
-const { data, loading, error, refresh, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
+import { defineEndpoint, useRequest } from "@/hooks/use-request";
+
+interface Project {
+  id: string;
+  name: string;
+}
+
+const listProjects = defineEndpoint<Record<string, never>, never, Project[]>({
+  method: "get",
+  url: "/projects",
+});
+
+const { data, loading, refresh } = useRequest(listProjects);
+```
+
+### URL + response 泛型
+
+```ts
+const { data } = useRequest<Project[]>("/projects", {
+  query: { page: 1, pageSize: 20 },
+});
+```
+
+### 自定义 service
+
+```ts
+const { data, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
 ```
 
 Hook 管理 `data / loading / error`，忽略过期响应，在卸载时中止在途请求，并暴露 `run`、`refresh`、`cancel` 和 `mutate`。
+
+## 错误处理
+
+- `components/ErrorBoundary.tsx` 捕获渲染错误和 lazy chunk 加载失败
+- `components/layout/PageError.tsx` 保留 Layout 外壳并提供重试
+- `components/layout/RootError.tsx` 处理应用级错误
+- 根路由配置了 `errorElement`
+- 环境变量在应用渲染前校验
 
 ## Git Hooks
 
