@@ -213,24 +213,19 @@ const Stack = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6">
-      <header className="space-y-4">
-        <p className="text-muted-foreground font-mono text-[10px] tracking-[0.28em] uppercase">Stack</p>
-        <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">技术栈</h1>
-        <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
-          这个模板实际安装的依赖。版本从 package.json 读取，按层组织运行时与开发工具。
-        </p>
-        <div className="flex flex-wrap items-center gap-3">
+    <div className="flex w-full flex-1 flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h1 className="text-3xl font-semibold tracking-[-0.03em]">技术栈</h1>
           <p className="text-muted-foreground font-mono text-[11px]">
             {ALL_ITEMS.length} 个依赖 · {runtimeCount} 运行时 · {devCount} 开发 · pnpm
           </p>
-          <span aria-hidden className="bg-border h-3 w-px" />
-          <Button variant="outline" size="sm" onClick={() => void copyAll()}>
-            {copied ? <CheckIcon /> : <CopyIcon />}
-            {copied ? "已复制" : "复制安装命令"}
-          </Button>
         </div>
-      </header>
+        <Button variant="outline" size="sm" onClick={() => void copyAll()}>
+          {copied ? <CheckIcon /> : <CopyIcon />}
+          {copied ? "已复制" : "复制安装命令"}
+        </Button>
+      </div>
 
       <div className="lg:divide-border grid grid-cols-2 gap-y-5 border-y py-5 sm:grid-cols-3 lg:grid-cols-6 lg:divide-x">
         {groups.map((group, index) => (

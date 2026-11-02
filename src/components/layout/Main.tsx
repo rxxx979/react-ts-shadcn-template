@@ -1,6 +1,6 @@
 import { cn } from "cn";
 import { Suspense, useLayoutEffect, useRef } from "react";
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, useMatches } from "react-router";
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { PageError } from "@/components/layout/PageError";
@@ -8,6 +8,7 @@ import { PageFallback } from "@/components/layout/PageFallback";
 import { OverlayScrollbar } from "@/components/OverlayScrollbar";
 import { getEasingValue } from "@/lib/theme";
 import type { PageTransition } from "@/lib/theme";
+import type { Handler } from "@/router";
 import { useLayoutStore } from "@/stores/layout";
 import { useThemeStore } from "@/stores/theme";
 
@@ -30,6 +31,9 @@ const PAGE_ANIMATIONS: Record<PageTransition, Keyframe[]> = {
 const PAGE_FALLBACK = <PageFallback />;
 const PAGE_ERROR = <PageError />;
 
+const isFluidHandler = (value: unknown): value is Handler =>
+  typeof value === "object" && value !== null && "fluid" in value && value.fluid === true;
+
 /**
  * 内容区：子路由出口（页面定位由顶栏面包屑承担，不再渲染标题）
  *
@@ -39,6 +43,7 @@ const Main = () => {
   // key 变化会重建节点，让入场动画在每次路由切换时重放
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  const fluid = useMatches().some((match) => isFluidHandler(match.handle));
   const ref = useRef<HTMLDivElement>(null);
   const transitionRef = useRef<HTMLDivElement>(null);
   const contentWidth = useLayoutStore((state) => state.contentWidth);
@@ -91,11 +96,11 @@ const Main = () => {
         data-pattern={pattern}
         className="no-scrollbar relative z-10 flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain"
       >
-        <div className="flex min-h-0 flex-1 flex-col gap-6 p-3 sm:p-4 xl:p-2">
+        <div className="flex min-h-0 flex-1 flex-col gap-6 px-4 pt-3 sm:px-5 xl:px-6">
           <div
             className={cn(
               "flex min-h-0 flex-1 flex-col gap-6",
-              contentWidth === "boxed" && !isHome && "mx-auto w-full max-w-360",
+              contentWidth === "boxed" && !isHome && !fluid && "mx-auto w-full max-w-360",
             )}
           >
             <ErrorBoundary key={pathname} fallback={PAGE_ERROR}>

@@ -10,7 +10,7 @@ const Footer = () => {
   const appName = useAppStore((state) => state.appName) || "Shadcn Admin";
 
   return (
-    <footer className="text-muted-foreground flex h-(--footer-height) shrink-0 items-center border-t px-6 text-sm md:rounded-b-xl">
+    <footer className="text-muted-foreground flex h-(--footer-height) shrink-0 items-center justify-center px-6 text-xs">
       © {YEAR} {appName}
     </footer>
   );

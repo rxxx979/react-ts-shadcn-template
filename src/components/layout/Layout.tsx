@@ -19,7 +19,7 @@ const getSidebarStyle = (width: number, showFooter: boolean): CSSProperties =>
   cssVars({
     "--sidebar-width": `${width}rem`,
     "--header-height": "calc(var(--spacing) * 12)",
-    "--footer-height": showFooter ? "calc(var(--spacing) * 11)" : "0px",
+    "--footer-height": showFooter ? "calc(var(--spacing) * 8)" : "0px",
   });
 
 /**

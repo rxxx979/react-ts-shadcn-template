@@ -1,5 +1,5 @@
 import { cn } from "cn";
-import { CircleAlertIcon, RadioIcon, RotateCcwIcon, SparklesIcon, SquareIcon } from "lucide-react";
+import { CircleAlertIcon, RotateCcwIcon, SparklesIcon, SquareIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -121,30 +121,8 @@ const Sse = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-5">
-      <header className="flex flex-wrap items-end justify-between gap-5 border-b pb-5">
-        <div>
-          <p className="text-muted-foreground flex items-center gap-2 font-mono text-[10px] tracking-[0.26em] uppercase">
-            <RadioIcon className="text-primary size-3.5" />
-            SSE / stream lab
-          </p>
-          <h1 className="mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">逐帧发生</h1>
-          <p className="text-muted-foreground mt-3 max-w-xl text-sm leading-relaxed">
-            一个类型安全的 SSE 通道。左侧看实现，右侧看每一帧如何变成界面。
-          </p>
-        </div>
-        <div className="flex items-center gap-2 pb-0.5">
-          <StatusPill status={status} complete={done !== null} />
-          <Button variant="outline" size="sm" onClick={handleReconnect}>
-            <RotateCcwIcon />
-            重连
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleStop} disabled={status === "closed" || status === "idle"}>
-            <SquareIcon />
-            停止
-          </Button>
-        </div>
-      </header>
+    <div className="flex w-full flex-1 flex-col gap-5">
+      <h1 className="text-3xl font-semibold tracking-[-0.03em]">实时流</h1>
 
       <section className="bg-card/60 flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border shadow-sm">
         <div className="bg-muted/20 flex min-h-12 shrink-0 flex-wrap items-center gap-x-4 gap-y-2 border-b px-4 py-2.5">
@@ -156,12 +134,17 @@ const Sse = () => {
           <span className="text-muted-foreground font-mono text-[10px]">
             {content.length} chars · {done ? `${done.elapsedMs}ms` : "live"}
           </span>
-          <span className="text-muted-foreground/60 ml-auto hidden font-mono text-[9px] tracking-[0.12em] uppercase sm:inline">
-            transport
-          </span>
-          <span className="rounded-full border px-2 py-0.5 font-mono text-[9px] tracking-[0.12em] uppercase">
-            text/event-stream
-          </span>
+          <div className="ml-auto flex flex-wrap items-center gap-2">
+            <StatusPill status={status} complete={done !== null} />
+            <Button variant="outline" size="sm" onClick={handleReconnect}>
+              <RotateCcwIcon />
+              重连
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleStop} disabled={status === "closed" || status === "idle"}>
+              <SquareIcon />
+              停止
+            </Button>
+          </div>
         </div>
 
         <div className="grid h-140 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
