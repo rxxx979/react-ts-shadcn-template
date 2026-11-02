@@ -134,6 +134,7 @@ src/
 │   ├── Home.tsx
 │   ├── Components.tsx
 │   ├── Stack.tsx
+│   ├── Sse.tsx
 │   └── NotFound.tsx
 ├── components/
 │   ├── OverlayScrollbar.tsx

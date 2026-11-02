@@ -17,10 +17,18 @@ const StackPage = lazy(async () => {
 });
 
 /**
+ * 懒加载的 SSE 演示页面
+ */
+const SsePage = lazy(async () => {
+  const module = await import("@/pages/Sse");
+  return { default: module.Sse };
+});
+
+/**
  * 懒加载占位
  */
 const PageFallback = () => (
   <div className="text-muted-foreground flex h-64 items-center justify-center text-sm">加载页面…</div>
 );
 
-export { ComponentsPage, PageFallback, StackPage };
+export { ComponentsPage, PageFallback, SsePage, StackPage };

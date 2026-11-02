@@ -136,6 +136,7 @@ src/
 │   ├── Home.tsx
 │   ├── Components.tsx
 │   ├── Stack.tsx
+│   ├── Sse.tsx
 │   └── NotFound.tsx
 ├── components/
 │   ├── OverlayScrollbar.tsx
@@ -152,7 +153,7 @@ src/
 - `components/layout/` — application shell, sidebar, header, footer
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
-- `lib/` — request, theme helpers and shared types
+- `lib/` — request, SSE, theme helpers and shared types
 - `stores/` — persisted Zustand stores for theme, layout and app settings
 
 ## Theme System

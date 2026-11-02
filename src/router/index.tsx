@@ -1,4 +1,4 @@
-import { BoxesIcon, ComponentIcon, HomeIcon } from "lucide-react";
+import { BoxesIcon, ComponentIcon, HomeIcon, RadioIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { createBrowserRouter } from "react-router";
@@ -8,7 +8,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Home } from "@/pages/Home";
 import { NotFound } from "@/pages/NotFound";
 
-import { ComponentsPage, PageFallback, StackPage } from "./lazy";
+import { ComponentsPage, PageFallback, SsePage, StackPage } from "./lazy";
 
 /**
  * 路由元信息：驱动侧边栏菜单与面包屑（见 layout/Menu.ts 的转换规则）
@@ -81,6 +81,20 @@ const routes: RouteItem[] = [
           title: "技术栈",
           breadcrumb: "技术栈",
           icon: <BoxesIcon />,
+        },
+      },
+      {
+        id: "Sse",
+        path: "sse",
+        element: (
+          <Suspense fallback={<PageFallback />}>
+            <SsePage />
+          </Suspense>
+        ),
+        handle: {
+          title: "实时流",
+          breadcrumb: "实时流",
+          icon: <RadioIcon />,
         },
       },
       {

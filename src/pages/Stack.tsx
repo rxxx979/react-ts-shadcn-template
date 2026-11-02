@@ -126,6 +126,7 @@ const PACKAGE_META: Record<string, PackageMeta> = {
   recharts: { category: "data", description: "React 图表库", docs: "https://recharts.org" },
   "date-fns": { category: "data", description: "日期处理工具", docs: "https://date-fns.org" },
   shiki: { category: "data", description: "代码高亮引擎", docs: "https://shiki.style" },
+  zod: { category: "data", description: "运行时 schema 校验", docs: "https://zod.dev" },
   "@babel/core": { category: "dev", description: "Babel 编译器核心", docs: "https://babeljs.io" },
   "@rolldown/plugin-babel": {
     category: "dev",
