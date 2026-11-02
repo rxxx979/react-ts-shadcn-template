@@ -31,7 +31,7 @@ Most admin templates give you a layout and a handful of pages. This one focuses 
 - **No theme flash** — a pre-paint bootstrap script applies persisted theme settings before React mounts
 - **Command palette** — search pages and actions with `⌘K`
 - **Component gallery** — a browsable showcase of the included shadcn/Base UI components
-- **CRUD example** — a typed project list with search, filters, create, edit and delete flows
+- **CRUD example** — a 1,000-row virtualized project table with search, sorting, filtering, pagination and drag reordering
 - **SSE lab** — a typed streaming demo built on the same request and schema conventions
 - **Error boundaries** — page and application fallbacks instead of a blank screen
 - **Validated environment** — app name and API base URI are checked at startup
@@ -50,7 +50,9 @@ Most admin templates give you a layout and a handful of pages. This one focuses 
 | Routing        | React Router 8                         |
 | State          | Zustand 5                              |
 | Hooks          | Mantine Hooks                          |
-| Data / content | Recharts, Shiki                        |
+| Data / content | TanStack Table 9, TanStack Virtual     |
+| Drag & drop    | dnd-kit                                |
+| Charts / code  | Recharts, Shiki                        |
 | Quality        | Oxlint, Oxfmt, Husky, lint-staged      |
 
 ## Requirements
@@ -161,6 +163,7 @@ src/
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
 - `lib/` — request, SSE, project mock service, theme helpers and shared types
+- `hooks/` — request, SSE, virtual rows and sortable rows
 - `stores/` — persisted Zustand stores for theme, layout and app settings
 
 ## Theme System

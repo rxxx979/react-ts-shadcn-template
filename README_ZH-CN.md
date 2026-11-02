@@ -46,7 +46,9 @@
 | 路由        | React Router 8                         |
 | 状态        | Zustand 5                              |
 | Hooks       | Mantine Hooks                          |
-| 数据 / 内容 | Recharts、Shiki                        |
+| 数据 / 内容 | TanStack Table 9、TanStack Virtual     |
+| 拖拽        | dnd-kit                                |
+| 图表 / 代码 | Recharts、Shiki                        |
 | 质量        | Oxlint、Oxfmt、Husky、lint-staged      |
 
 ## 环境要求
@@ -153,6 +155,7 @@ src/
 - `components/theme/` — 主题与外观面板
 - `components/ui/` — shadcn registry 组件
 - `lib/` — 请求、SSE、项目 mock service、主题工具与共享类型
+- `hooks/` — 请求、SSE、虚拟行与可排序行
 - `stores/` — 主题、布局与应用设置的持久化 Zustand store
 
 ## 主题系统

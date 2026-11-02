@@ -30,6 +30,10 @@ interface Handler {
    * True 时该路由渲染为菜单分组标签节：title 作为节标签，children 作为节内菜单项
    */
   navGroup?: boolean;
+  /**
+   * True 时内容区忽略 boxed 最大宽度，铺满可用空间
+   */
+  fluid?: boolean;
 }
 
 /**
@@ -64,6 +68,7 @@ const routes: RouteItem[] = [
           title: "项目",
           breadcrumb: "项目",
           icon: <FolderKanbanIcon />,
+          fluid: true,
         },
       },
       {

@@ -3,6 +3,7 @@ import { RouterProvider } from "react-router";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { RootError } from "@/components/layout/RootError";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { Toaster } from "@/components/ui/toast";
 import { router, routes } from "@/router";
 import { toNavigation } from "@/router/navigation";
 import { NavigationProvider } from "@/router/NavigationProvider";
@@ -15,7 +16,9 @@ const App = () => {
     <ThemeProvider>
       <ErrorBoundary fallback={ROOT_ERROR}>
         <NavigationProvider items={navigation}>
-          <RouterProvider router={router} />
+          <Toaster>
+            <RouterProvider router={router} />
+          </Toaster>
         </NavigationProvider>
       </ErrorBoundary>
     </ThemeProvider>

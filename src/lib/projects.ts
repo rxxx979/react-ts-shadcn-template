@@ -22,7 +22,7 @@ const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   completed: "已完成",
 };
 
-let projects: Project[] = [
+const CURATED_PROJECTS: Project[] = [
   {
     id: "p-01",
     name: "设计系统迁移",
@@ -73,6 +73,62 @@ let projects: Project[] = [
   },
 ];
 
+const PROJECT_NAME_POOL = [
+  "增长实验平台",
+  "客户门户改版",
+  "内容审核工作流",
+  "实时协作白板",
+  "账单中心",
+  "通知系统",
+  "搜索体验优化",
+  "国际化资源管理",
+  "性能监控",
+  "设计令牌",
+  "移动端离线能力",
+  "开放平台",
+  "团队权限",
+  "数据导出",
+  "审计日志",
+  "AI 助手",
+  "订阅生命周期",
+  "帮助中心",
+  "运营活动配置",
+  "文件存储迁移",
+];
+
+const OWNER_POOL = ["林舟", "陈默", "苏晚", "周屿", "顾言", "沈知", "唐宁", "许澄"];
+
+const DESCRIPTION_POOL = [
+  "梳理现有流程，补齐关键路径上的状态与反馈。",
+  "统一交互与数据结构，减少重复实现。",
+  "围绕真实使用场景补齐空状态和异常处理。",
+  "把隐式规则显式化，降低维护成本。",
+  "优化首屏信息密度，让主要操作更直接。",
+  "完善权限边界和审计记录。",
+];
+
+const STATUS_POOL: ProjectStatus[] = ["active", "active", "paused", "completed"];
+
+/**
+ * 生成演示数据，便于验证虚拟滚动
+ *
+ * @param count - 生成数量
+ */
+const createGeneratedProjects = (count: number): Project[] => {
+  const now = Date.now();
+
+  return Array.from({ length: count }, (_, index) => ({
+    id: `p-g-${String(index + 1).padStart(4, "0")}`,
+    name: `${PROJECT_NAME_POOL[index % PROJECT_NAME_POOL.length]} · ${String(index + 7).padStart(3, "0")}`,
+    description: DESCRIPTION_POOL[index % DESCRIPTION_POOL.length],
+    owner: OWNER_POOL[index % OWNER_POOL.length],
+    status: STATUS_POOL[index % STATUS_POOL.length],
+    updatedAt: now - ((index * 37) % 4320) * 60 * 1000,
+  }));
+};
+
+let projects: Project[] = [...CURATED_PROJECTS, ...createGeneratedProjects(1000 - CURATED_PROJECTS.length)];
+
 /**
  * 模拟网络延迟，并支持 AbortSignal
  *
@@ -107,7 +163,7 @@ const wait = (ms: number, signal?: AbortSignal): Promise<void> =>
  */
 const listProjects = async (signal?: AbortSignal): Promise<Project[]> => {
   await wait(450, signal);
-  return projects.map((project) => ({ ...project }));
+  return [...projects];
 };
 
 /**
@@ -155,5 +211,26 @@ const removeProject = async (id: string): Promise<void> => {
   projects = projects.filter((project) => project.id !== id);
 };
 
-export { PROJECT_STATUS_LABELS, createProject, listProjects, removeProject, updateProject };
+/**
+ * 按给定 id 顺序重排项目
+ *
+ * @param ids - 新的项目顺序
+ * @param signal - 可选中止信号
+ */
+const reorderProjects = async (ids: string[], signal?: AbortSignal): Promise<Project[]> => {
+  await wait(180, signal);
+  const byId = new Map(projects.map((project) => [project.id, project]));
+  const reordered = ids.flatMap((id) => {
+    const project = byId.get(id);
+    return project ? [project] : [];
+  });
+
+  if (reordered.length === projects.length) {
+    projects = reordered;
+  }
+
+  return [...projects];
+};
+
+export { PROJECT_STATUS_LABELS, createProject, listProjects, removeProject, reorderProjects, updateProject };
 export type { Project, ProjectInput, ProjectStatus };

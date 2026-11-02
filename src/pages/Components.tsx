@@ -172,7 +172,7 @@ import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Toaster, toast } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast";
 import { Toggle } from "@/components/ui/toggle";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -334,22 +334,16 @@ const Components = () => {
   const setPanelOpen = useThemeStore((state) => state.setPanelOpen);
 
   return (
-    <Toaster>
+    <>
       <div className="flex flex-col gap-6 pb-10 xl:flex-row">
         <div className="@container min-w-0 flex-1 space-y-10">
-          <header className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <p className="text-muted-foreground text-[11px] tracking-[0.2em] uppercase">Design System</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight">组件库</h1>
-              <p className="text-muted-foreground mt-1 max-w-xl text-sm">
-                全部 shadcn 组件，颜色、圆角与表面全部来自主题 token。右侧调色，页面即时变化。
-              </p>
-            </div>
-            <Button variant="outline" className="xl:hidden" onClick={() => setPanelOpen(true)}>
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="text-3xl font-semibold tracking-[-0.03em]">组件库</h1>
+            <Button variant="outline" size="sm" className="xl:hidden" onClick={() => setPanelOpen(true)}>
               <PaletteIcon />
               主题配置
             </Button>
-          </header>
+          </div>
 
           <Section title="按钮与标识" description="交互基础元素与状态徽标。">
             <Demo title="Button" contentClassName="gap-2">
@@ -1043,7 +1037,7 @@ const Components = () => {
         <PaletteIcon />
         主题
       </Button>
-    </Toaster>
+    </>
   );
 };
 
