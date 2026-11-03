@@ -19,8 +19,7 @@ import {
   UnderlineIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
-import { useEffect, useRef, useState } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 import { ThemePanel } from "@/components/theme/ThemePanel";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -62,8 +61,6 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import type { ChartConfig } from "@/components/ui/chart";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
   CodeBlock,
@@ -204,22 +201,13 @@ const drawerCloseButton = (
     关闭
   </Button>
 );
-const chartTooltipContent = <ChartTooltipContent />;
-
 const firstValue = (value: number | readonly number[]) => (typeof value === "number" ? value : value[0]);
 
-const chartData = [
-  { month: "1月", desktop: 168, mobile: 120 },
-  { month: "2月", desktop: 240, mobile: 160 },
-  { month: "3月", desktop: 196, mobile: 140 },
-  { month: "4月", desktop: 320, mobile: 210 },
-  { month: "5月", desktop: 286, mobile: 190 },
-];
-
-const chartConfig = {
-  desktop: { label: "桌面", color: "var(--chart-1)" },
-  mobile: { label: "移动", color: "var(--chart-2)" },
-} satisfies ChartConfig;
+const ChartDemo = lazy(async () => {
+  const module = await import("./components/ChartDemo");
+  return { default: module.ChartDemo };
+});
+const CHART_FALLBACK = <div className="bg-muted h-56 w-full animate-pulse rounded-lg" />;
 
 const frameworks = ["React", "Vue", "Svelte", "Solid", "Angular"];
 
@@ -817,15 +805,9 @@ const Components = () => {
 
           <Section title="数据展示" description="图表与日历。">
             <Demo title="Chart" span={2}>
-              <ChartContainer config={chartConfig} className="h-56 w-full">
-                <BarChart data={chartData}>
-                  <CartesianGrid vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} axisLine={false} />
-                  <ChartTooltip content={chartTooltipContent} />
-                  <Bar dataKey="desktop" fill="var(--color-desktop)" radius={6} />
-                  <Bar dataKey="mobile" fill="var(--color-mobile)" radius={6} />
-                </BarChart>
-              </ChartContainer>
+              <Suspense fallback={CHART_FALLBACK}>
+                <ChartDemo />
+              </Suspense>
             </Demo>
             <Demo title="Calendar" span={2}>
               <Calendar
