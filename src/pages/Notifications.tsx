@@ -56,7 +56,7 @@ const Notifications = () => {
   };
 
   return (
-    <div className="flex w-full max-w-6xl flex-col gap-5">
+    <div className="flex w-full flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-3xl font-semibold tracking-[-0.03em]">通知</h1>
@@ -72,7 +72,7 @@ const Notifications = () => {
         )}
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
+      <div className="grid min-h-0 gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
         <div className="bg-card/60 min-w-0 overflow-hidden rounded-xl border">
           <div className="flex flex-wrap items-center gap-1 border-b px-3 py-2">
             {(["all", "unread"] as const).map((value) => (
@@ -96,7 +96,7 @@ const Notifications = () => {
           <NotificationList items={filtered} onSelect={handleSelect} onToggleRead={handleToggleRead} />
         </div>
 
-        <aside className="flex flex-col gap-5">
+        <aside className="flex flex-col gap-5 xl:sticky xl:top-0 xl:h-fit">
           <section className="bg-card/60 rounded-xl border p-5">
             <p className="text-muted-foreground font-mono text-[9px] tracking-[0.12em] uppercase">Unread</p>
             <p className="mt-2 font-mono text-4xl tracking-tight">{unread}</p>
