@@ -1,5 +1,5 @@
 import { closestCorners, DndContext, DragOverlay, MeasuringStrategy } from "@dnd-kit/core";
-import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
   columnFilteringFeature,
@@ -77,7 +77,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
 import { usePermission } from "@/hooks/use-permission";
 import { useRequest } from "@/hooks/use-request";
-import { useSortableRows } from "@/hooks/use-sortable-rows";
+import { useSortableItem } from "@/hooks/use-sortable-item";
+import { useSortableList } from "@/hooks/use-sortable-list";
 import { useVirtualRows } from "@/hooks/use-virtual-rows";
 import type { Project, ProjectInput, ProjectStatus } from "@/lib/projects";
 import {
@@ -155,10 +156,7 @@ interface ProjectRowProps {
  * 虚拟行 + 可排序行
  */
 const ProjectRow = ({ row, virtualStart, sortable, gridTemplate }: ProjectRowProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: row.id,
-    disabled: !sortable,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortableItem(row.id, !sortable);
   const dndTransform = CSS.Transform.toString(transform);
   const project = row.original;
   const rowStyle = useMemo<CSSProperties>(
@@ -493,7 +491,7 @@ const Projects = () => {
     void persistReorder(ids);
   };
 
-  const { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel } = useSortableRows({
+  const { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel } = useSortableList({
     ids: projects.map((project) => project.id),
     onReorder: handleReorder,
     disabled: !manualSort,

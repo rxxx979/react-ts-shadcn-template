@@ -1,23 +1,11 @@
-import {
-  closestCorners,
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  useDroppable,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+import { closestCorners, DndContext, DragOverlay, useDroppable } from "@dnd-kit/core";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVerticalIcon } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+
+import { useBoardDnd } from "@/hooks/use-board-dnd";
+import { useSortableItem } from "@/hooks/use-sortable-item";
 
 type ColumnId = "backlog" | "progress" | "review" | "done";
 
@@ -74,7 +62,7 @@ const Card = ({ task, overlay = false }: { task: Task; overlay?: boolean }) => (
 );
 
 const SortableCard = ({ task }: { task: Task }) => {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortableItem(task.id);
   const style = useMemo(
     () => ({ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.35 : 1 }),
     [isDragging, transform, transition],
@@ -114,57 +102,17 @@ const KanbanColumn = ({ id, label, tasks }: { id: ColumnId; label: string; tasks
  * Kanban 拖拽演示：跨列移动
  */
 const Kanban = () => {
-  const [board, setBoard] = useState<Board>(INITIAL_BOARD);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
-  const activeTask = activeId
-    ? COLUMNS.flatMap((column) => board[column.id]).find((task) => task.id === activeId)
-    : undefined;
-
-  const handleDragEnd = ({
-    active,
-    over,
-  }: {
-    active: { id: string | number };
-    over: { id: string | number } | null;
-  }) => {
-    setActiveId(null);
-    if (!over) return;
-    const activeKey = String(active.id);
-    const overKey = String(over.id);
-    const source = COLUMNS.find((column) => board[column.id].some((task) => task.id === activeKey));
-    const target = COLUMNS.find(
-      (column) => column.id === overKey || board[column.id].some((task) => task.id === overKey),
-    );
-    if (!source || !target) return;
-
-    setBoard((current) => {
-      const sourceTasks = current[source.id];
-      const targetTasks = current[target.id];
-      const task = sourceTasks.find((item) => item.id === activeKey);
-      if (!task) return current;
-
-      if (source.id === target.id) {
-        const oldIndex = sourceTasks.findIndex((item) => item.id === activeKey);
-        const newIndex =
-          overKey === target.id ? targetTasks.length - 1 : targetTasks.findIndex((item) => item.id === overKey);
-        return {
-          ...current,
-          [source.id]: arrayMove(sourceTasks, oldIndex, newIndex < 0 ? targetTasks.length - 1 : newIndex),
-        };
-      }
-
-      const targetIndex =
-        overKey === target.id ? targetTasks.length : targetTasks.findIndex((item) => item.id === overKey);
-      const nextSource = sourceTasks.filter((item) => item.id !== activeKey);
-      const nextTarget = [...targetTasks];
-      nextTarget.splice(targetIndex < 0 ? targetTasks.length : targetIndex, 0, task);
-      return { ...current, [source.id]: nextSource, [target.id]: nextTarget };
-    });
-  };
+  const {
+    board,
+    activeItem: activeTask,
+    sensors,
+    handleDragStart,
+    handleDragEnd,
+    handleDragCancel,
+  } = useBoardDnd({
+    columns: COLUMNS.map((column) => column.id),
+    initialBoard: INITIAL_BOARD,
+  });
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col gap-5">
@@ -176,9 +124,9 @@ const Kanban = () => {
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
-        onDragStart={({ active }) => setActiveId(String(active.id))}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
-        onDragCancel={() => setActiveId(null)}
+        onDragCancel={handleDragCancel}
       >
         <div className="grid min-h-0 flex-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
           {COLUMNS.map((column) => (

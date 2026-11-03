@@ -1,9 +1,10 @@
-import { KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
-import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-interface UseSortableRowsOptions {
+import { useDndSensors } from "@/hooks/use-dnd-sensors";
+
+interface UseSortableListOptions {
   /**
    * 当前顺序的 id
    */
@@ -19,16 +20,13 @@ interface UseSortableRowsOptions {
 }
 
 /**
- * 行排序的 dnd-kit 状态封装
+ * 任意可排序列表的状态封装：表格行、div 列表、卡片列表均可使用
  *
  * @param options - Id 列表、排序回调与禁用状态
  */
-const useSortableRows = ({ ids, onReorder, disabled = false }: UseSortableRowsOptions) => {
+const useSortableList = ({ ids, onReorder, disabled = false }: UseSortableListOptions) => {
   const [activeId, setActiveId] = useState<string | null>(null);
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
-  );
+  const sensors = useDndSensors();
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
@@ -58,4 +56,4 @@ const useSortableRows = ({ ids, onReorder, disabled = false }: UseSortableRowsOp
   return { activeId, sensors, handleDragStart, handleDragEnd, handleDragCancel };
 };
 
-export { useSortableRows };
+export { useSortableList };
