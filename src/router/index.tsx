@@ -1,4 +1,5 @@
 import {
+  BellIcon,
   BoxesIcon,
   Columns3Icon,
   ComponentIcon,
@@ -22,6 +23,7 @@ import { Home } from "@/pages/Home";
 import { Kanban } from "@/pages/Kanban";
 import { Login } from "@/pages/Login";
 import { NotFound } from "@/pages/NotFound";
+import { Notifications } from "@/pages/Notifications";
 import { Permissions } from "@/pages/Permissions";
 import { Settings } from "@/pages/Settings";
 import { Upload } from "@/pages/Upload";
@@ -194,6 +196,16 @@ const routes: RouteItem[] = [
           breadcrumb: "设置",
           icon: <SettingsIcon />,
           permission: "settings:update",
+        },
+      },
+      {
+        id: "Notifications",
+        path: "notifications",
+        element: <Notifications />,
+        handle: {
+          title: "通知",
+          breadcrumb: "通知",
+          icon: <BellIcon />,
         },
       },
       {
