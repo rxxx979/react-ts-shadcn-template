@@ -3,6 +3,7 @@ import { SortableContext, useSortable, verticalListSortingStrategy } from "@dnd-
 import { CSS } from "@dnd-kit/utilities";
 import {
   columnFilteringFeature,
+  columnVisibilityFeature,
   createColumnHelper,
   createFilteredRowModel,
   createPaginatedRowModel,
@@ -11,12 +12,13 @@ import {
   flexRender,
   globalFilteringFeature,
   rowPaginationFeature,
+  rowSelectionFeature,
   rowSortingFeature,
   sortFn_basic,
   tableFeatures,
   useTable,
 } from "@tanstack/react-table";
-import type { ColumnFiltersState, PaginationState, Row, SortingState } from "@tanstack/react-table";
+import type { ColumnFiltersState, PaginationState, Row, RowSelectionState, SortingState } from "@tanstack/react-table";
 import { cn } from "cn";
 import {
   ArrowDownIcon,
@@ -26,6 +28,8 @@ import {
   ChevronRightIcon,
   ChevronsLeftIcon,
   ChevronsRightIcon,
+  Columns3Icon,
+  DownloadIcon,
   FolderKanbanIcon,
   GripVerticalIcon,
   InboxIcon,
@@ -37,8 +41,10 @@ import {
 } from "lucide-react";
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import type { CSSProperties, SubmitEvent } from "react";
+import { Link } from "react-router";
 
 import { Can } from "@/components/auth/Can";
+import { ProjectStatusBadge } from "@/components/projects/ProjectStatusBadge";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -48,6 +54,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -56,6 +63,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -66,25 +81,13 @@ import { useSortableRows } from "@/hooks/use-sortable-rows";
 import { useVirtualRows } from "@/hooks/use-virtual-rows";
 import type { Project, ProjectInput, ProjectStatus } from "@/lib/projects";
 import {
-  PROJECT_STATUS_LABELS,
   createProject,
   listProjects,
   removeProject,
+  removeProjects,
   reorderProjects,
   updateProject,
 } from "@/lib/projects";
-
-const STATUS_META: Record<ProjectStatus, { dot: string; tone: string }> = {
-  active: {
-    dot: "bg-emerald-500",
-    tone: "border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
-  },
-  paused: { dot: "bg-amber-500", tone: "border-amber-500/20 bg-amber-500/10 text-amber-700 dark:text-amber-400" },
-  completed: {
-    dot: "bg-muted-foreground/60",
-    tone: "border-border bg-muted/40 text-muted-foreground",
-  },
-};
 
 const FILTERS: Array<{ id: "all" | ProjectStatus; label: string }> = [
   { id: "all", label: "全部" },
@@ -100,7 +103,18 @@ const EMPTY_FORM: ProjectInput = {
   status: "active",
 };
 
-const GRID_TEMPLATE = "grid grid-cols-[28px_minmax(0,1.8fr)_100px_110px_100px_72px]";
+const COLUMN_WIDTHS: Record<string, string> = {
+  select: "36px",
+  project: "minmax(0,1.8fr)",
+  owner: "100px",
+  status: "110px",
+  updated: "100px",
+  actions: "72px",
+};
+const DEFAULT_GRID = "28px 36px minmax(0,1.8fr) 100px 110px 100px 72px";
+const DEFAULT_GRID_STYLE = { gridTemplateColumns: DEFAULT_GRID };
+const getGridTemplate = (columnIds: string[]) =>
+  ["28px", ...columnIds.map((id) => COLUMN_WIDTHS[id] ?? "100px")].join(" ");
 const ROW_HEIGHT = 68;
 const HEADER_HEIGHT = 40;
 const DATE_FORMATTER = new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric" });
@@ -108,34 +122,23 @@ const SKELETON_ROWS = ["one", "two", "three", "four", "five"];
 const DROPPABLE_MEASURING = { droppable: { strategy: MeasuringStrategy.Always } };
 
 /**
- * 项目状态徽标
- *
- * @param props.status - 项目状态
- */
-const StatusBadge = ({ status }: { status: ProjectStatus }) => (
-  <span
-    className={cn(
-      "inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 font-mono text-[9px] tracking-[0.08em]",
-      STATUS_META[status].tone,
-    )}
-  >
-    <span className={cn("size-1.5 rounded-full", STATUS_META[status].dot)} />
-    {PROJECT_STATUS_LABELS[status]}
-  </span>
-);
-
-/**
  * 项目名称与描述
  *
  * @param props.project - 项目
  */
-const ProjectIdentity = ({ project }: { project: Project }) => (
+const ProjectIdentity = ({ project, link = false }: { project: Project; link?: boolean }) => (
   <div className="flex min-w-0 items-center gap-3">
     <div className="bg-primary/10 text-primary flex size-8 shrink-0 items-center justify-center rounded-lg font-mono text-[11px]">
       {project.name.slice(0, 1)}
     </div>
     <div className="min-w-0">
-      <p className="truncate text-sm font-medium">{project.name}</p>
+      {link ? (
+        <Link to={`/projects/${project.id}`} className="truncate text-sm font-medium hover:underline">
+          {project.name}
+        </Link>
+      ) : (
+        <p className="truncate text-sm font-medium">{project.name}</p>
+      )}
       <p className="text-muted-foreground mt-0.5 max-w-md truncate text-[11px]">{project.description}</p>
     </div>
   </div>
@@ -145,12 +148,13 @@ interface ProjectRowProps {
   row: Row<typeof TABLE_FEATURES, Project>;
   virtualStart: number;
   sortable: boolean;
+  gridTemplate: string;
 }
 
 /**
  * 虚拟行 + 可排序行
  */
-const ProjectRow = ({ row, virtualStart, sortable }: ProjectRowProps) => {
+const ProjectRow = ({ row, virtualStart, sortable, gridTemplate }: ProjectRowProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: row.id,
     disabled: !sortable,
@@ -163,8 +167,9 @@ const ProjectRow = ({ row, virtualStart, sortable }: ProjectRowProps) => {
       top: virtualStart,
       transform: dndTransform,
       transition,
+      gridTemplateColumns: gridTemplate,
     }),
-    [dndTransform, transition, virtualStart],
+    [dndTransform, gridTemplate, transition, virtualStart],
   );
 
   return (
@@ -172,8 +177,7 @@ const ProjectRow = ({ row, virtualStart, sortable }: ProjectRowProps) => {
       ref={setNodeRef}
       role="row"
       className={cn(
-        GRID_TEMPLATE,
-        "absolute top-0 left-0 w-full items-center border-b border-border/60 bg-card/30 transition-colors hover:bg-muted/20",
+        "absolute top-0 left-0 grid w-full items-center border-b border-border/60 bg-card/30 transition-colors hover:bg-muted/20",
         isDragging && "z-20 opacity-30",
       )}
       style={rowStyle}
@@ -192,7 +196,7 @@ const ProjectRow = ({ row, virtualStart, sortable }: ProjectRowProps) => {
         )}
       </div>
 
-      {row.getAllCells().map((cell) => (
+      {row.getVisibleCells().map((cell) => (
         <div
           key={cell.id}
           role="gridcell"
@@ -211,14 +215,18 @@ const ProjectRow = ({ row, virtualStart, sortable }: ProjectRowProps) => {
  * @param props.project - 正在拖拽的项目
  */
 const ProjectOverlay = ({ project }: { project: Project }) => (
-  <div className={cn(GRID_TEMPLATE, "bg-card/95 h-17 w-195 items-center rounded-lg border shadow-xl backdrop-blur")}>
+  <div
+    className="bg-card/95 grid h-17 w-195 items-center rounded-lg border shadow-xl backdrop-blur"
+    style={DEFAULT_GRID_STYLE}
+  >
+    <div />
     <div />
     <div className="px-3">
       <ProjectIdentity project={project} />
     </div>
     <div className="px-3 text-sm">{project.owner}</div>
     <div className="px-3">
-      <StatusBadge status={project.status} />
+      <ProjectStatusBadge status={project.status} />
     </div>
     <div className="text-muted-foreground px-3 font-mono text-[11px]">{DATE_FORMATTER.format(project.updatedAt)}</div>
     <div />
@@ -227,8 +235,10 @@ const ProjectOverlay = ({ project }: { project: Project }) => (
 
 const TABLE_FEATURES = tableFeatures({
   columnFilteringFeature,
+  columnVisibilityFeature,
   globalFilteringFeature,
   rowPaginationFeature,
+  rowSelectionFeature,
   rowSortingFeature,
   filteredRowModel: createFilteredRowModel(),
   sortedRowModel: createSortedRowModel(),
@@ -251,10 +261,34 @@ interface ProjectColumnActions {
  */
 const createProjectColumns = ({ onEdit, onDelete }: ProjectColumnActions) =>
   projectColumnHelper.columns([
+    projectColumnHelper.display({
+      id: "select",
+      header: ({ table }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={table.getIsAllPageRowsSelected()}
+            aria-label="选择当前页"
+            onCheckedChange={(checked) => table.toggleAllPageRowsSelected(checked)}
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-center">
+          <Checkbox
+            checked={row.getIsSelected()}
+            aria-label={`选择 ${row.original.name}`}
+            onCheckedChange={(checked) => row.toggleSelected(checked)}
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    }),
     projectColumnHelper.accessor("name", {
       id: "project",
       header: "项目",
-      cell: ({ row }) => <ProjectIdentity project={row.original} />,
+      enableHiding: false,
+      cell: ({ row }) => <ProjectIdentity project={row.original} link />,
     }),
     projectColumnHelper.accessor("owner", {
       header: "负责人",
@@ -263,7 +297,7 @@ const createProjectColumns = ({ onEdit, onDelete }: ProjectColumnActions) =>
     projectColumnHelper.accessor("status", {
       header: "状态",
       filterFn: "equals",
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: ({ row }) => <ProjectStatusBadge status={row.original.status} />,
     }),
     projectColumnHelper.accessor("updatedAt", {
       header: "更新",
@@ -278,6 +312,7 @@ const createProjectColumns = ({ onEdit, onDelete }: ProjectColumnActions) =>
       id: "actions",
       header: "操作",
       enableSorting: false,
+      enableHiding: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
           <Can permission="project:update">
@@ -316,6 +351,9 @@ const Projects = () => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [manualSort, setManualSort] = useState(false);
   const [pagination, setPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 50 });
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Project | null>(null);
   const [form, setForm] = useState<ProjectInput>(EMPTY_FORM);
@@ -475,10 +513,13 @@ const Projects = () => {
       columnFilters: manualSort ? [] : columnFilters,
       globalFilter: manualSort ? "" : deferredQuery,
       pagination: manualSort ? { pageIndex: 0, pageSize: Math.max(projects.length, 1) } : pagination,
+      rowSelection,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onPaginationChange: setPagination,
+    onRowSelectionChange: setRowSelection,
+    enableRowSelection: true,
     autoResetPageIndex: true,
     globalFilterFn: (row, _columnId, filterValue) => {
       const value = String(filterValue).toLowerCase().trim();
@@ -493,6 +534,9 @@ const Projects = () => {
   });
 
   const rows = table.getRowModel().rows;
+  const gridTemplate = getGridTemplate(table.getVisibleLeafColumns().map((column) => column.id));
+  const selectedRows = table.getSelectedRowModel().rows;
+  const selectedCount = selectedRows.length;
   const pageCount = table.getPageCount();
   const pageIndex = table.state.pagination.pageIndex;
   const totalRows = table.getPrePaginatedRowModel().rows.length;
@@ -504,6 +548,7 @@ const Projects = () => {
     scrollRef,
     scrollMargin: HEADER_HEIGHT,
   });
+  const gridStyle = useMemo<CSSProperties>(() => ({ gridTemplateColumns: gridTemplate }), [gridTemplate]);
   const virtualRows = rowVirtualizer.getVirtualItems();
   const virtualTotalSize = rowVirtualizer.getTotalSize();
 
@@ -513,6 +558,47 @@ const Projects = () => {
 
   const handleStatusFilter = (status: "all" | ProjectStatus) => {
     setColumnFilters(status === "all" ? [] : [{ id: "status", value: status }]);
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedCount === 0) return;
+
+    setBulkDeleting(true);
+    try {
+      await removeProjects(selectedRows.map((row) => row.id));
+      setRowSelection({});
+      setBulkDeleteOpen(false);
+      await refresh();
+      toast.add({ title: "批量删除完成", description: `已删除 ${selectedCount} 个项目`, type: "success" });
+    } catch (cause) {
+      toast.add({
+        title: "批量删除失败",
+        description: cause instanceof Error ? cause.message : "请稍后重试",
+        type: "error",
+      });
+    } finally {
+      setBulkDeleting(false);
+    }
+  };
+
+  const handleExport = () => {
+    const exportRows = selectedCount > 0 ? selectedRows : table.getPrePaginatedRowModel().rows;
+    const header = ["id", "name", "owner", "status", "updatedAt"];
+    const escape = (value: string) => `"${value.replaceAll('"', '""')}"`;
+    const body = exportRows.map((row) => {
+      const project = row.original;
+      return [project.id, project.name, project.owner, project.status, new Date(project.updatedAt).toISOString()]
+        .map((value) => escape(value))
+        .join(",");
+    });
+    const blob = new Blob([`\uFEFF${header.join(",")}\n${body.join("\n")}`], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "projects.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.add({ title: "已导出 CSV", description: `${exportRows.length} 条项目`, type: "success" });
   };
 
   const scrollKey = `${pageIndex}:${deferredQuery}:${statusFilter}:${manualSort}`;
@@ -599,6 +685,33 @@ const Projects = () => {
             <RefreshCwIcon className={cn(loading && "animate-spin")} />
             刷新
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="border-input bg-background hover:bg-muted inline-flex h-7 items-center gap-1 rounded-md border px-2 text-xs transition-colors">
+              <Columns3Icon className="size-3.5" />列
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40">
+              <DropdownMenuLabel>显示列</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {table
+                .getAllLeafColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={column.id}
+                    checked={column.getIsVisible()}
+                    onCheckedChange={(checked) => column.toggleVisibility(checked)}
+                  >
+                    {typeof column.columnDef.header === "string" ? column.columnDef.header : column.id}
+                  </DropdownMenuCheckboxItem>
+                ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Can permission="project:export">
+            <Button variant="outline" size="sm" onClick={handleExport}>
+              <DownloadIcon />
+              导出 CSV
+            </Button>
+          </Can>
           <Can permission="project:create">
             <Button size="sm" onClick={handleOpenCreate}>
               <PlusIcon />
@@ -607,6 +720,21 @@ const Projects = () => {
           </Can>
         </div>
       </div>
+
+      {selectedCount > 0 && (
+        <div className="bg-muted/40 flex flex-wrap items-center gap-2 rounded-lg border px-3 py-2 text-xs">
+          <span className="font-medium">已选择 {selectedCount} 项</span>
+          <Can permission="project:delete">
+            <Button variant="destructive" size="sm" onClick={() => setBulkDeleteOpen(true)}>
+              <Trash2Icon />
+              批量删除
+            </Button>
+          </Can>
+          <Button variant="ghost" size="sm" onClick={() => setRowSelection({})}>
+            清除选择
+          </Button>
+        </div>
+      )}
 
       {error && (
         <div className="border-destructive/30 bg-destructive/5 text-destructive flex flex-wrap items-center gap-3 rounded-xl border px-4 py-3 text-sm">
@@ -632,7 +760,8 @@ const Projects = () => {
 
         {loading && !data ? (
           <div className="min-w-195">
-            <div className={cn(GRID_TEMPLATE, "h-10 items-center border-b bg-muted/20")}>
+            <div className="bg-muted/20 grid h-10 items-center border-b" style={DEFAULT_GRID_STYLE}>
+              <span />
               <span />
               {["项目", "负责人", "状态", "更新", "操作"].map((label) => (
                 <span key={label} className="text-muted-foreground px-3 text-[11px] font-medium">
@@ -641,7 +770,8 @@ const Projects = () => {
               ))}
             </div>
             {SKELETON_ROWS.map((row) => (
-              <div key={row} className={cn(GRID_TEMPLATE, "h-17 items-center border-b")}>
+              <div key={row} className="grid h-17 items-center border-b" style={DEFAULT_GRID_STYLE}>
+                <span />
                 <span />
                 <div className="flex items-center gap-3 px-3">
                   <div className="bg-muted size-8 animate-pulse rounded-lg" />
@@ -678,7 +808,8 @@ const Projects = () => {
               <div role="table" aria-label="项目列表" aria-rowcount={rows.length} className="min-w-195">
                 <div
                   role="row"
-                  className={cn(GRID_TEMPLATE, "bg-card sticky top-0 z-10 h-10 items-center border-b px-3")}
+                  className="bg-card sticky top-0 z-10 grid h-10 items-center border-b px-3"
+                  style={gridStyle}
                 >
                   <div role="columnheader" aria-label="拖动排序" />
                   {tableHeaders.map((header) => {
@@ -730,6 +861,7 @@ const Projects = () => {
                           row={row}
                           virtualStart={virtualRow.start - HEADER_HEIGHT}
                           sortable={manualSort}
+                          gridTemplate={gridTemplate}
                         />
                       );
                     })}
@@ -896,6 +1028,28 @@ const Projects = () => {
           </form>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={bulkDeleteOpen}
+        onOpenChange={(open) => {
+          setBulkDeleteOpen(open);
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>删除 {selectedCount} 个项目？</AlertDialogTitle>
+            <AlertDialogDescription>选中的项目会被永久删除，这个操作只影响本地 mock 数据。</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <Button variant="outline" onClick={() => setBulkDeleteOpen(false)}>
+              取消
+            </Button>
+            <Button variant="destructive" onClick={() => void handleBulkDelete()} disabled={bulkDeleting}>
+              {bulkDeleting ? "删除中…" : "确认删除"}
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog
         open={deleting !== null}

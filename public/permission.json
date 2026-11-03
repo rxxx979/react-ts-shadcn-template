@@ -10,9 +10,20 @@
       "component:read",
       "stack:read",
       "stream:read",
-      "permission:manage"
+      "permission:manage",
+      "settings:update",
+      "file:upload"
     ],
-    "editor": ["project:read", "project:create", "project:update", "component:read", "stack:read", "stream:read"],
+    "editor": [
+      "project:read",
+      "project:create",
+      "project:update",
+      "component:read",
+      "stack:read",
+      "stream:read",
+      "settings:update",
+      "file:upload"
+    ],
     "viewer": ["project:read", "stack:read"]
   }
 }

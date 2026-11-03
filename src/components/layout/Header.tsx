@@ -2,6 +2,7 @@ import { cn } from "cn";
 import { SearchIcon } from "lucide-react";
 import { Link, useMatches } from "react-router";
 
+import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -60,11 +61,12 @@ const Header = ({ onOpenCommand, scrolled = false }: { onOpenCommand?: () => voi
           </Breadcrumb>
         </>
       )}
-      <div className="ml-auto flex items-center gap-1 md:hidden">
+      <div className="ml-auto flex items-center gap-1">
+        <NotificationCenter />
         <Button
           variant="ghost"
           size="icon-sm"
-          className="text-muted-foreground"
+          className="text-muted-foreground md:hidden"
           aria-label="打开命令面板"
           onClick={() => onOpenCommand?.()}
         >

@@ -212,6 +212,17 @@ const removeProject = async (id: string): Promise<void> => {
 };
 
 /**
+ * 批量删除项目
+ *
+ * @param ids - 项目 id
+ */
+const removeProjects = async (ids: string[]): Promise<void> => {
+  await wait(250);
+  const idSet = new Set(ids);
+  projects = projects.filter((project) => !idSet.has(project.id));
+};
+
+/**
  * 按给定 id 顺序重排项目
  *
  * @param ids - 新的项目顺序
@@ -232,5 +243,73 @@ const reorderProjects = async (ids: string[], signal?: AbortSignal): Promise<Pro
   return [...projects];
 };
 
-export { PROJECT_STATUS_LABELS, createProject, listProjects, removeProject, reorderProjects, updateProject };
-export type { Project, ProjectInput, ProjectStatus };
+/**
+ * 项目活动记录
+ */
+interface ProjectActivity {
+  id: string;
+  label: string;
+  description: string;
+  actor: string;
+  at: number;
+  /**
+   * 所属阶段索引
+   */
+  stage: number;
+}
+
+/**
+ * 获取单个项目
+ *
+ * @param id - 项目 id
+ */
+const getProject = async (id: string): Promise<Project | null> => {
+  await wait(220);
+  const project = projects.find((item) => item.id === id);
+  return project ? { ...project } : null;
+};
+
+/**
+ * 获取项目活动记录（演示数据）
+ *
+ * @param project - 项目
+ */
+const getProjectActivity = (project: Project): ProjectActivity[] => [
+  {
+    id: `${project.id}-created`,
+    label: "创建项目",
+    description: "项目已创建并分配给负责人。",
+    actor: project.owner,
+    at: project.updatedAt - 1000 * 60 * 60 * 72,
+    stage: 0,
+  },
+  {
+    id: `${project.id}-status`,
+    label: project.status === "completed" ? "标记为已完成" : "更新项目状态",
+    description: `当前状态：${PROJECT_STATUS_LABELS[project.status]}`,
+    actor: project.owner,
+    at: project.updatedAt - 1000 * 60 * 60 * 5,
+    stage: 1,
+  },
+  {
+    id: `${project.id}-updated`,
+    label: "更新项目信息",
+    description: "补充了项目描述和负责人信息。",
+    actor: project.owner,
+    at: project.updatedAt,
+    stage: 2,
+  },
+];
+
+export {
+  PROJECT_STATUS_LABELS,
+  createProject,
+  getProject,
+  getProjectActivity,
+  listProjects,
+  removeProject,
+  removeProjects,
+  reorderProjects,
+  updateProject,
+};
+export type { Project, ProjectActivity, ProjectInput, ProjectStatus };

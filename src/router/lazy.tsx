@@ -1,6 +1,14 @@
 import { lazy } from "react";
 
 /**
+ * 懒加载的项目详情页面
+ */
+const ProjectDetailPage = lazy(async () => {
+  const module = await import("@/pages/ProjectDetail");
+  return { default: module.ProjectDetail };
+});
+
+/**
  * 懒加载的组件库页面：把全量 shadcn 组件及其依赖隔离到独立 chunk
  */
 const ComponentsPage = lazy(async () => {
@@ -32,4 +40,4 @@ const SsePage = lazy(async () => {
   return { default: module.Sse };
 });
 
-export { ComponentsPage, ProjectsPage, SsePage, StackPage };
+export { ComponentsPage, ProjectDetailPage, ProjectsPage, SsePage, StackPage };

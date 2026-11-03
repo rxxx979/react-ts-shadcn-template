@@ -1,18 +1,34 @@
-import { BoxesIcon, ComponentIcon, FolderKanbanIcon, HomeIcon, RadioIcon, ShieldCheckIcon } from "lucide-react";
+import {
+  BoxesIcon,
+  Columns3Icon,
+  ComponentIcon,
+  FolderKanbanIcon,
+  HomeIcon,
+  RadioIcon,
+  SettingsIcon,
+  ShieldCheckIcon,
+  UploadIcon,
+} from "lucide-react";
 import type { ReactNode } from "react";
 import { createBrowserRouter, redirect } from "react-router";
-import type { RouteObject } from "react-router";
+import type { LoaderFunctionArgs, RouteObject } from "react-router";
 
 import { Layout } from "@/components/layout/Layout";
 import { RootError } from "@/components/layout/RootError";
 import type { Permission } from "@/lib/auth";
+import { getProject } from "@/lib/projects";
+import type { Project } from "@/lib/projects";
 import { Home } from "@/pages/Home";
+import { Kanban } from "@/pages/Kanban";
 import { Login } from "@/pages/Login";
 import { NotFound } from "@/pages/NotFound";
 import { Permissions } from "@/pages/Permissions";
+import { Settings } from "@/pages/Settings";
+import { Upload } from "@/pages/Upload";
 
 import { loginAction, loginLoader, logoutAction, requireAuth, requirePermission } from "./auth";
-import { ComponentsPage, ProjectsPage, SsePage, StackPage } from "./lazy";
+import { ComponentsPage, ProjectDetailPage, ProjectsPage, SsePage, StackPage } from "./lazy";
+import { settingsAction, settingsLoader } from "./settings";
 
 /**
  * 路由元信息：驱动侧边栏菜单与面包屑（见 layout/Menu.ts 的转换规则）
@@ -50,6 +66,31 @@ interface Handler {
 type RouteItem = RouteObject & {
   handle?: Handler;
   children?: RouteItem[];
+};
+
+/**
+ * 详情页 loader：校验 project:read 后读取项目
+ */
+const projectDetailLoader = async (args: LoaderFunctionArgs): Promise<Project | null | Response> => {
+  const denied = await requirePermission("project:read")(args);
+
+  if (denied) {
+    return denied;
+  }
+
+  return getProject(args.params.id ?? "");
+};
+
+const settingsRouteLoader = async (args: LoaderFunctionArgs) => {
+  const denied = await requirePermission("settings:update")(args);
+  return denied ?? settingsLoader(args);
+};
+
+const settingsRouteAction = async (
+  args: Parameters<typeof settingsAction>[0],
+): Promise<Response | Awaited<ReturnType<typeof settingsAction>>> => {
+  const denied = await requirePermission("settings:update")(args);
+  return denied ?? settingsAction(args);
 };
 
 const routes: RouteItem[] = [
@@ -98,6 +139,15 @@ const routes: RouteItem[] = [
         },
       },
       {
+        id: "ProjectDetail",
+        path: "projects/:id",
+        element: <ProjectDetailPage />,
+        loader: projectDetailLoader,
+        handle: {
+          breadcrumb: "项目详情",
+        },
+      },
+      {
         id: "Components",
         path: "components",
         element: <ComponentsPage />,
@@ -131,6 +181,43 @@ const routes: RouteItem[] = [
           breadcrumb: "实时流",
           icon: <RadioIcon />,
           permission: "stream:read",
+        },
+      },
+      {
+        id: "Settings",
+        path: "settings",
+        element: <Settings />,
+        loader: settingsRouteLoader,
+        action: settingsRouteAction,
+        handle: {
+          title: "设置",
+          breadcrumb: "设置",
+          icon: <SettingsIcon />,
+          permission: "settings:update",
+        },
+      },
+      {
+        id: "Upload",
+        path: "upload",
+        element: <Upload />,
+        loader: requirePermission("file:upload"),
+        handle: {
+          title: "上传",
+          breadcrumb: "上传",
+          icon: <UploadIcon />,
+          permission: "file:upload",
+        },
+      },
+      {
+        id: "Kanban",
+        path: "kanban",
+        element: <Kanban />,
+        loader: requirePermission("project:update"),
+        handle: {
+          title: "看板",
+          breadcrumb: "看板",
+          icon: <Columns3Icon />,
+          permission: "project:update",
         },
       },
       {

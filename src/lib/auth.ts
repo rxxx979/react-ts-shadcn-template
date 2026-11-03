@@ -15,7 +15,9 @@ type Permission =
   | "component:read"
   | "stack:read"
   | "stream:read"
-  | "permission:manage";
+  | "permission:manage"
+  | "settings:update"
+  | "file:upload";
 
 /**
  * 已登录用户
@@ -74,8 +76,19 @@ const ROLE_PERMISSIONS: Record<AuthRole, readonly Permission[]> = {
     "stack:read",
     "stream:read",
     "permission:manage",
+    "settings:update",
+    "file:upload",
   ],
-  editor: ["project:read", "project:create", "project:update", "component:read", "stack:read", "stream:read"],
+  editor: [
+    "project:read",
+    "project:create",
+    "project:update",
+    "component:read",
+    "stack:read",
+    "stream:read",
+    "settings:update",
+    "file:upload",
+  ],
   viewer: ["project:read", "stack:read"],
 };
 
@@ -108,6 +121,8 @@ const PERMISSION_LIST: readonly Permission[] = [
   "stack:read",
   "stream:read",
   "permission:manage",
+  "settings:update",
+  "file:upload",
 ];
 
 /**
