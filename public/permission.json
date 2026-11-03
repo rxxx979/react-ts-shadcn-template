@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "roles": {
+    "admin": [
+      "project:read",
+      "project:create",
+      "project:update",
+      "project:delete",
+      "project:export",
+      "component:read",
+      "stack:read",
+      "stream:read",
+      "permission:manage"
+    ],
+    "editor": ["project:read", "project:create", "project:update", "component:read", "stack:read", "stream:read"],
+    "viewer": ["project:read", "stack:read"]
+  }
+}

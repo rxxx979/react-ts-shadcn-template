@@ -31,6 +31,7 @@
 - **无主题闪烁** — 首帧前同步应用持久化主题，避免刷新时闪白
 - **Command Palette** — 使用 `⌘K` 搜索页面与操作
 - **组件画廊** — 可浏览的 shadcn/Base UI 组件展示
+- **Auth + 权限** — data mode 登录/登出、受保护路由、运行时页面权限与按钮级权限门
 - **细节默认值** — 浮层滚动条、减少动效支持、响应式布局与键盘快捷键
 - **类型安全的请求层** — `request` 客户端与 `useRequest` Hook，处理竞态与取消
 - **严格工具链** — Oxlint（type-aware）、Oxfmt、Husky 与 lint-staged
@@ -67,7 +68,23 @@ cp .env.example .env
 pnpm dev
 ```
 
-打开 <http://localhost:5173>。
+打开 <http://localhost:5173>，会自动跳转到 `/login`。
+
+## 演示账号
+
+| 角色   | 邮箱                 | 密码        | 可访问内容           |
+| ------ | -------------------- | ----------- | -------------------- |
+| 管理员 | `admin@example.com`  | `admin123`  | 全部页面             |
+| 编辑   | `editor@example.com` | `editor123` | 项目、组件库、实时流 |
+| 访客   | `viewer@example.com` | `viewer123` | 项目与基础页面       |
+
+登录态是 **前端 mock**，保存在 `localStorage`，不代表真实安全边界。
+
+登录/登出使用 React Router data mode 的 `action`，受保护布局使用 `loader` 守卫。
+
+权限使用 `resource:action` 字符串（`project:update`、`component:read` 等）。
+
+页面权限在启动时从 `public/permission.json` 加载。管理员可以在 `/permissions` 按角色开关页面权限，覆盖值保存在 `localStorage`，导航和路由守卫会立即生效。真实项目应由后端返回权限列表，并在每个 API 上强制校验。
 
 ## 使用这个模板
 
@@ -128,11 +145,13 @@ src/
 ├── main.tsx
 ├── router/
 │   ├── index.tsx
+│   ├── auth.ts
 │   ├── lazy.tsx
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
+│   ├── Login.tsx
 │   ├── Home.tsx
 │   ├── Projects.tsx
 │   ├── Components.tsx
@@ -154,9 +173,13 @@ src/
 - `components/layout/` — 应用壳层、侧边栏、顶栏、页脚
 - `components/theme/` — 主题与外观面板
 - `components/ui/` — shadcn registry 组件
-- `lib/` — 请求、SSE、项目 mock service、主题工具与共享类型
+- `lib/` — 请求、SSE、项目 mock service、auth 工具、主题工具与共享类型
 - `hooks/` — 请求、SSE、虚拟行与可排序行
-- `stores/` — 主题、布局与应用设置的持久化 Zustand store
+- `stores/` — auth、主题、布局与应用设置的持久化 Zustand store
+- `router/auth.ts` — data mode 登录/登出 action、auth 与权限守卫
+- `components/auth/Can.tsx` — 按钮级权限门
+- `stores/permission.ts` — 运行时权限配置与本地覆盖
+- `public/permission.json` — 可编辑的页面权限矩阵
 
 ## 主题系统
 

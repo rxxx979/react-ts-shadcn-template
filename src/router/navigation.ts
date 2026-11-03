@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 
+import { can } from "@/lib/auth";
+import type { AuthUser } from "@/lib/auth";
+
 import type { Handler, RouteItem } from "./index";
 
 /**
@@ -37,7 +40,7 @@ const isHandler = (value: unknown): value is Handler =>
  *
  * @returns 有序导航项
  */
-const toNavigation = (routes: readonly RouteItem[]): NavigationEntry[] => {
+const toNavigation = (routes: readonly RouteItem[], user?: AuthUser | null): NavigationEntry[] => {
   const entries: NavigationEntry[] = [];
 
   const walk = (items: readonly RouteItem[], parentPath: string) => {
@@ -51,7 +54,11 @@ const toNavigation = (routes: readonly RouteItem[]): NavigationEntry[] => {
           : parentPath;
       const normalizedPath = normalizePath(path);
       const handle = isHandler(route.handle) ? route.handle : undefined;
-      const { title, breadcrumb, icon } = handle ?? {};
+      const { title, breadcrumb, icon, permission } = handle ?? {};
+
+      if (permission && !can(user, permission)) {
+        continue;
+      }
 
       if (title && breadcrumb) {
         entries.push({ path: normalizedPath, title, breadcrumb, icon });

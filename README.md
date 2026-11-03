@@ -33,6 +33,7 @@ Most admin templates give you a layout and a handful of pages. This one focuses 
 - **Component gallery** — a browsable showcase of the included shadcn/Base UI components
 - **CRUD example** — a 1,000-row virtualized project table with search, sorting, filtering, pagination and drag reordering
 - **SSE lab** — a typed streaming demo built on the same request and schema conventions
+- **Auth + permissions** — data-mode login/logout, protected routes, runtime page permissions and button gates
 - **Error boundaries** — page and application fallbacks instead of a blank screen
 - **Validated environment** — app name and API base URI are checked at startup
 - **Thoughtful defaults** — overlay scrollbars, reduced-motion support, responsive layout and keyboard shortcuts
@@ -136,11 +137,13 @@ src/
 ├── main.tsx
 ├── router/
 │   ├── index.tsx
+│   ├── auth.ts
 │   ├── lazy.tsx
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
+│   ├── Login.tsx
 │   ├── Home.tsx
 │   ├── Projects.tsx
 │   ├── Components.tsx
@@ -162,9 +165,13 @@ src/
 - `components/layout/` — application shell, sidebar, header, footer
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
-- `lib/` — request, SSE, project mock service, theme helpers and shared types
+- `lib/` — request, SSE, project mock service, auth helpers, theme helpers and shared types
 - `hooks/` — request, SSE, virtual rows and sortable rows
-- `stores/` — persisted Zustand stores for theme, layout and app settings
+- `stores/` — persisted Zustand stores for auth, theme, layout and app settings
+- `router/auth.ts` — data-mode login/logout actions, auth and permission guards
+- `components/auth/Can.tsx` — button-level permission gate
+- `stores/permission.ts` — runtime permission config and local overrides
+- `public/permission.json` — editable page permission matrix
 
 ## Theme System
 

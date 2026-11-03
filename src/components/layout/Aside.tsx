@@ -1,6 +1,7 @@
 import { ChevronsUpDownIcon, GalleryVerticalEndIcon, LogOutIcon, SearchIcon } from "lucide-react";
+import { useMemo } from "react";
 import type { ComponentProps } from "react";
-import { Link } from "react-router";
+import { Link, useSubmit } from "react-router";
 
 import { buildNavItems } from "@/components/layout/Menu";
 import { ThemeMenu } from "@/components/theme/ThemeMenu";
@@ -23,23 +24,12 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useNavigation } from "@/hooks/use-navigation";
+import { ROLE_LABELS } from "@/lib/auth";
 import { useAppStore } from "@/stores/app";
+import { useAuthStore } from "@/stores/auth";
 
 import { NavMain } from "./NavMain";
 
-// TODO: 接入登录态后替换为当前用户（头像、名称、邮箱）
-const footerUser = {
-  name: "管理员",
-  email: "admin@example.com",
-};
-
-const footerTrigger = (
-  <SidebarMenuButton
-    size="lg"
-    tooltip={footerUser.name}
-    className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
-  />
-);
 const brandLink = <Link to="/" />;
 
 /**
@@ -48,25 +38,48 @@ const brandLink = <Link to="/" />;
  * 菜单内含主题快捷设置（模式 / 色板）与外观设置面板入口；「退出登录」为占位（见 TODO）
  */
 const AsideFooter = () => {
+  const user = useAuthStore((state) => state.user);
+  const submit = useSubmit();
+  const trigger = useMemo(
+    () =>
+      user ? (
+        <SidebarMenuButton
+          size="lg"
+          tooltip={user.name}
+          className="data-open:bg-sidebar-accent data-open:text-sidebar-accent-foreground"
+        />
+      ) : null,
+    [user],
+  );
+
+  if (!user || !trigger) {
+    return null;
+  }
+
+  const handleLogout = () => {
+    void submit(null, { method: "post", action: "/logout" });
+  };
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
-          <DropdownMenuTrigger render={footerTrigger}>
+          <DropdownMenuTrigger render={trigger}>
             <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-full text-sm font-medium">
-              {footerUser.name.charAt(0)}
+              {user.name.charAt(0)}
             </div>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{footerUser.name}</span>
-              <span className="text-sidebar-foreground/70 truncate text-xs">{footerUser.email}</span>
+              <span className="truncate font-semibold">{user.name}</span>
+              <span className="text-sidebar-foreground/70 truncate text-xs">
+                {ROLE_LABELS[user.role]} · {user.email}
+              </span>
             </div>
             <ChevronsUpDownIcon className="ml-auto size-4" />
           </DropdownMenuTrigger>
           <DropdownMenuContent side="top" align="end" sideOffset={8} className="min-w-52">
             <ThemeMenu />
             <DropdownMenuSeparator />
-            {/* TODO: 接入登录态后注销 */}
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOutIcon />
               退出登录
             </DropdownMenuItem>
@@ -76,7 +89,6 @@ const AsideFooter = () => {
     </SidebarMenu>
   );
 };
-
 /**
  * 左侧边栏（inset 变体，可折叠为 icon）：品牌块 + 路由菜单 + 底部用户块
  *

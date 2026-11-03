@@ -38,6 +38,7 @@ import {
 import { useDeferredValue, useMemo, useRef, useState } from "react";
 import type { CSSProperties, SubmitEvent } from "react";
 
+import { Can } from "@/components/auth/Can";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -59,6 +60,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/toast";
+import { usePermission } from "@/hooks/use-permission";
 import { useRequest } from "@/hooks/use-request";
 import { useSortableRows } from "@/hooks/use-sortable-rows";
 import { useVirtualRows } from "@/hooks/use-virtual-rows";
@@ -278,23 +280,27 @@ const createProjectColumns = ({ onEdit, onDelete }: ProjectColumnActions) =>
       enableSorting: false,
       cell: ({ row }) => (
         <div className="flex justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`编辑 ${row.original.name}`}
-            onClick={() => onEdit(row.original)}
-          >
-            <PencilIcon />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon-sm"
-            aria-label={`删除 ${row.original.name}`}
-            className="text-muted-foreground hover:text-destructive"
-            onClick={() => onDelete(row.original)}
-          >
-            <Trash2Icon />
-          </Button>
+          <Can permission="project:update">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={`编辑 ${row.original.name}`}
+              onClick={() => onEdit(row.original)}
+            >
+              <PencilIcon />
+            </Button>
+          </Can>
+          <Can permission="project:delete">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label={`删除 ${row.original.name}`}
+              className="text-muted-foreground hover:text-destructive"
+              onClick={() => onDelete(row.original)}
+            >
+              <Trash2Icon />
+            </Button>
+          </Can>
         </div>
       ),
     }),
@@ -319,6 +325,8 @@ const Projects = () => {
   const [deletingBusy, setDeletingBusy] = useState(false);
   const deferredQuery = useDeferredValue(query.trim().toLowerCase());
   const scrollRef = useRef<HTMLDivElement>(null);
+  const canUpdate = usePermission("project:update");
+  const canDelete = usePermission("project:delete");
 
   const projects = data ?? [];
   const statusFilterValue = columnFilters.find((filter) => filter.id === "status")?.value;
@@ -453,7 +461,9 @@ const Projects = () => {
     disabled: !manualSort,
   });
 
-  const columns = createProjectColumns({ onEdit: handleOpenEdit, onDelete: setDeleting });
+  const columns = createProjectColumns({ onEdit: handleOpenEdit, onDelete: setDeleting }).filter(
+    (column) => column.id !== "actions" || canUpdate || canDelete,
+  );
 
   const table = useTable({
     features: TABLE_FEATURES,
@@ -589,10 +599,12 @@ const Projects = () => {
             <RefreshCwIcon className={cn(loading && "animate-spin")} />
             刷新
           </Button>
-          <Button size="sm" onClick={handleOpenCreate}>
-            <PlusIcon />
-            新建项目
-          </Button>
+          <Can permission="project:create">
+            <Button size="sm" onClick={handleOpenCreate}>
+              <PlusIcon />
+              新建项目
+            </Button>
+          </Can>
         </div>
       </div>
 
@@ -735,10 +747,12 @@ const Projects = () => {
             </div>
             <p className="mt-4 text-sm font-medium">没有匹配的项目</p>
             <p className="text-muted-foreground mt-1 text-xs">换个关键词，或者创建一个新项目。</p>
-            <Button variant="outline" size="sm" className="mt-4" onClick={handleOpenCreate}>
-              <PlusIcon />
-              新建项目
-            </Button>
+            <Can permission="project:create">
+              <Button variant="outline" size="sm" className="mt-4" onClick={handleOpenCreate}>
+                <PlusIcon />
+                新建项目
+              </Button>
+            </Can>
           </div>
         )}
 
