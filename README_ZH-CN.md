@@ -2,7 +2,7 @@
 
 <p align="center">
   一个专注核心能力的 React 后台起点，包含运行时主题、<br />
-  登录鉴权、通知中心和干净的 App Shell。
+  可折叠 App Shell 与 Command Palette。
 </p>
 
 <p align="center">
@@ -19,15 +19,15 @@
 </p>
 
 <p align="center">
-  <img src="./docs/preview.png" alt="Shadcn Admin Template 预览" width="100%" />
+  <img src="./docs/preview.png" alt="Shadcn Admin Template 完整示例预览" width="100%" />
 </p>
 
 ## 分支
 
-| 分支       | 用途                                                        |
-| ---------- | ----------------------------------------------------------- |
-| `main`     | 精简起点：Home、Settings、Notifications、Permissions        |
-| `showcase` | 完整示例：Projects 表格、Kanban、Upload、Components、SSE 等 |
+| 分支       | 用途                                                         |
+| ---------- | ------------------------------------------------------------ |
+| `main`     | 精简起点：App Shell + Home                                   |
+| `showcase` | 完整示例：Projects、表格、Kanban、Upload、Components、SSE 等 |
 
 新项目使用 `main`；需要查看完整交互示例时切换到 `showcase`。
 
@@ -37,9 +37,7 @@
 - **布局控制** — 侧边栏位置、变体、折叠模式、宽度、顶栏样式与内容宽度
 - **无主题闪烁** — 首帧前同步应用持久化主题，避免刷新时闪白
 - **Command Palette** — 使用 `⌘K` 搜索页面与操作
-- **Auth + 权限** — data mode 登录/登出、受保护路由、运行时页面权限与按钮级权限门
-- **通知中心** — 分组通知、未读状态与 mock SSE 实时流
-- **Settings 表单** — React Router data mode action、Zod 校验与字段错误
+- **响应式壳层** — 可折叠侧边栏、吸顶顶栏、inset 内容与页脚
 - **错误边界** — 页面级与应用级 fallback，避免白屏
 - **严格工具链** — Oxlint（type-aware）、Oxfmt、Husky 与 lint-staged
 
@@ -72,7 +70,7 @@ cp .env.example .env
 pnpm dev
 ```
 
-打开 <http://localhost:5173>，会自动跳转到 `/login`。
+打开 <http://localhost:5173>。
 
 ### 完整示例
 
@@ -103,42 +101,30 @@ pnpm dev
 pnpm prepare
 ```
 
+## 环境变量
+
+复制示例文件：
+
+```bash
+cp .env.example .env
+```
+
+| 变量                | 默认值         | 说明           |
+| ------------------- | -------------- | -------------- |
+| `VITE_APP_NAME`     | `Shadcn Admin` | 应用默认名称   |
+| `VITE_API_BASE_URI` | `/api`         | 请求层基础 URI |
+
+应用名、主题和布局也可以在运行时通过外观面板修改，配置会持久化到 `localStorage`。
+
 ## 页面
 
-`main` 只保留应用壳层和可复用能力：
+`main` 只包含壳层和一个页面：
 
 ```text
-/login
-/                  Home
-/settings          data mode 表单 + Zod 校验
-/notifications     分组通知 + mock SSE
-/permissions       运行时权限矩阵（管理员）
+/    Home
 ```
 
-`/settings` 和 `/permissions` 受权限保护；通知对所有已登录用户开放。
-
-## 演示账号
-
-| 角色   | 邮箱                 | 密码        | 可访问内容       |
-| ------ | -------------------- | ----------- | ---------------- |
-| 管理员 | `admin@example.com`  | `admin123`  | 设置、权限、通知 |
-| 编辑   | `editor@example.com` | `editor123` | 设置、通知       |
-| 访客   | `viewer@example.com` | `viewer123` | 通知             |
-
-登录态是 **前端 mock**，保存在 `localStorage`，不代表真实安全边界。
-
-## 权限
-
-精简版保留两个权限：
-
-```text
-settings:update
-permission:manage
-```
-
-页面权限在启动时从 `public/permission.json` 加载。管理员可以在 `/permissions` 按角色开关权限，覆盖值保存在 `localStorage`，导航和路由守卫会立即生效。
-
-真实项目应由后端返回权限列表，并在每个 API 上强制校验。
+新增页面时，在 `src/router/index.tsx` 注册路由，并把页面放到 `src/pages/`。
 
 ## 脚本
 
@@ -161,22 +147,15 @@ src/
 ├── main.tsx
 ├── router/
 │   ├── index.tsx
-│   ├── auth.ts
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
-│   ├── Login.tsx
 │   ├── Home.tsx
-│   ├── Settings.tsx
-│   ├── Notifications.tsx
-│   ├── Permissions.tsx
 │   └── NotFound.tsx
 ├── components/
 │   ├── layout/
 │   ├── theme/
-│   ├── notifications/
-│   ├── auth/
 │   └── ui/
 ├── hooks/
 ├── lib/
@@ -188,10 +167,9 @@ src/
 - `components/layout/` — 应用壳层、侧边栏、顶栏、页脚
 - `components/theme/` — 主题与外观面板
 - `components/ui/` — shadcn registry 组件
-- `lib/` — 请求、auth、权限、通知与共享工具
-- `stores/` — auth、主题、布局、应用设置与通知的持久化 Zustand store
-- `router/auth.ts` — data mode 登录/登出 action、auth 与权限守卫
-- `components/auth/Can.tsx` — 按钮级权限门
+- `lib/` — 请求、主题与共享工具
+- `stores/` — 主题、布局与应用设置的持久化 Zustand store
+- `router/index.tsx` — 路由表与页面元信息
 
 ## 主题系统
 

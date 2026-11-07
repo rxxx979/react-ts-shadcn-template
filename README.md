@@ -6,7 +6,7 @@
 
 <p align="center">
   A focused React admin starter with runtime theming,<br />
-  auth guards, notifications and a clean app shell.
+  a collapsible shell and a command palette.
 </p>
 
 <p align="center">
@@ -19,17 +19,17 @@
 </p>
 
 <p align="center">
-  <img src="./docs/preview.png" alt="Shadcn Admin Template preview" width="100%" />
+  <img src="./docs/preview.png" alt="Shadcn Admin Template full showcase preview" width="100%" />
 </p>
 
 ## Branches
 
-| Branch     | Purpose                                                        |
-| ---------- | -------------------------------------------------------------- |
-| `main`     | Minimal starter: Home, Settings, Notifications and Permissions |
-| `showcase` | Full demo: Projects, table, Kanban, Upload, Components and SSE |
+| Branch     | Purpose                                                              |
+| ---------- | -------------------------------------------------------------------- |
+| `main`     | Minimal starter: app shell + Home                                    |
+| `showcase` | Full demo: Projects, table, Kanban, Upload, Components, SSE and more |
 
-Use `main` when starting a new app. Browse `showcase` for the full component and interaction examples.
+Use `main` when starting a new app. Browse `showcase` for full interaction examples.
 
 ## What is included
 
@@ -37,9 +37,7 @@ Use `main` when starting a new app. Browse `showcase` for the full component and
 - **Layout controls** — sidebar side, variant, collapse mode, width, header style and content width
 - **No theme flash** — a pre-paint bootstrap script applies persisted theme settings before React mounts
 - **Command palette** — search pages and actions with `⌘K`
-- **Auth + permissions** — data-mode login/logout, protected routes, runtime page permissions and button gates
-- **Notifications** — grouped notification center, unread state and a mock SSE stream
-- **Settings form** — React Router data-mode action with Zod validation and field errors
+- **Responsive shell** — collapsible sidebar, sticky header, inset content and footer
 - **Error boundaries** — page and application fallbacks instead of a blank screen
 - **Validated environment** — app name and API base URI are checked at startup
 - **Strict tooling** — Oxlint (type-aware), Oxfmt, Husky and lint-staged
@@ -123,40 +121,13 @@ Environment values are validated at startup with Zod. Application name, theme an
 
 ## Pages
 
-`main` keeps only the application shell and reusable capabilities:
+`main` ships with the shell and a single page:
 
 ```text
-/login
-/                  Home
-/settings          Data-mode form + Zod validation
-/notifications     Grouped inbox + mock SSE
-/permissions       Runtime permission matrix (admin)
+/    Home
 ```
 
-`/settings` and `/permissions` are permission-gated. Notifications are available to every signed-in user.
-
-## Demo Accounts
-
-| Role   | Email                | Password    | Access                               |
-| ------ | -------------------- | ----------- | ------------------------------------ |
-| Admin  | `admin@example.com`  | `admin123`  | Settings, permissions, notifications |
-| Editor | `editor@example.com` | `editor123` | Settings, notifications              |
-| Viewer | `viewer@example.com` | `viewer123` | Notifications                        |
-
-The session is a **frontend mock** stored in `localStorage`. It is not a production security boundary.
-
-## Permissions
-
-Permissions use `resource:action` strings. The starter keeps:
-
-```text
-settings:update
-permission:manage
-```
-
-Page permissions are loaded from `public/permission.json`. Admins can toggle them at `/permissions`; overrides are stored in `localStorage` and apply immediately to navigation and route guards.
-
-In a real app, return permissions from the backend and enforce them on every API call.
+Add routes in `src/router/index.tsx` and place screens in `src/pages/`.
 
 ## Scripts
 
@@ -179,22 +150,15 @@ src/
 ├── main.tsx
 ├── router/
 │   ├── index.tsx
-│   ├── auth.ts
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
-│   ├── Login.tsx
 │   ├── Home.tsx
-│   ├── Settings.tsx
-│   ├── Notifications.tsx
-│   ├── Permissions.tsx
 │   └── NotFound.tsx
 ├── components/
 │   ├── layout/
 │   ├── theme/
-│   ├── notifications/
-│   ├── auth/
 │   └── ui/
 ├── hooks/
 ├── lib/
@@ -206,10 +170,9 @@ src/
 - `components/layout/` — application shell, sidebar, header, footer
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
-- `lib/` — request, auth, permissions, notifications and shared helpers
-- `stores/` — persisted Zustand stores for auth, theme, layout, app settings and notifications
-- `router/auth.ts` — data-mode login/logout actions, auth and permission guards
-- `components/auth/Can.tsx` — button-level permission gate
+- `lib/` — request, theme and shared helpers
+- `stores/` — persisted Zustand stores for theme, layout and app settings
+- `router/index.tsx` — route table and page metadata
 
 ## Theme System
 

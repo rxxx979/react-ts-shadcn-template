@@ -2,7 +2,6 @@ import { cn } from "cn";
 import { SearchIcon } from "lucide-react";
 import { Link, useMatches } from "react-router";
 
-import { NotificationCenter } from "@/components/layout/NotificationCenter";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -62,7 +61,6 @@ const Header = ({ onOpenCommand, scrolled = false }: { onOpenCommand?: () => voi
         </>
       )}
       <div className="ml-auto flex items-center gap-1">
-        <NotificationCenter />
         <Button
           variant="ghost"
           size="icon-sm"

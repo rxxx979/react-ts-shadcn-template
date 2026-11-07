@@ -8,13 +8,11 @@ import { Toaster } from "@/components/ui/toast";
 import { router, routes } from "@/router";
 import { toNavigation } from "@/router/navigation";
 import { NavigationProvider } from "@/router/NavigationProvider";
-import { useAuthStore } from "@/stores/auth";
 
 const ROOT_ERROR = <RootError />;
 
 const App = () => {
-  const user = useAuthStore((state) => state.user);
-  const navigation = useMemo(() => toNavigation(routes, user), [user]);
+  const navigation = useMemo(() => toNavigation(routes), []);
 
   return (
     <ThemeProvider>
