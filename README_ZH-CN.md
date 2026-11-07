@@ -1,8 +1,8 @@
 <h1 align="center">Shadcn Admin Template</h1>
 
 <p align="center">
-  一个注重细节的 React 后台模板，包含运行时主题、可折叠侧边栏、<br />
-  Command Palette 和完整的组件画廊。
+  一个专注核心能力的 React 后台起点，包含运行时主题、<br />
+  登录鉴权、通知中心和干净的 App Shell。
 </p>
 
 <p align="center">
@@ -22,35 +22,39 @@
   <img src="./docs/preview.png" alt="Shadcn Admin Template 预览" width="100%" />
 </p>
 
-## 为什么选择这个模板
+## 分支
 
-大多数后台模板只提供布局和少量页面。这个模板更关注那些让界面真正完整的细节：
+| 分支       | 用途                                                        |
+| ---------- | ----------------------------------------------------------- |
+| `main`     | 精简起点：Home、Settings、Notifications、Permissions        |
+| `showcase` | 完整示例：Projects 表格、Kanban、Upload、Components、SSE 等 |
+
+新项目使用 `main`；需要查看完整交互示例时切换到 `showcase`。
+
+## 包含内容
 
 - **运行时主题** — 明暗/跟随系统、主题预设、自定义品牌色、界面色与强调色
 - **布局控制** — 侧边栏位置、变体、折叠模式、宽度、顶栏样式与内容宽度
 - **无主题闪烁** — 首帧前同步应用持久化主题，避免刷新时闪白
 - **Command Palette** — 使用 `⌘K` 搜索页面与操作
-- **组件画廊** — 可浏览的 shadcn/Base UI 组件展示
 - **Auth + 权限** — data mode 登录/登出、受保护路由、运行时页面权限与按钮级权限门
-- **细节默认值** — 浮层滚动条、减少动效支持、响应式布局与键盘快捷键
-- **类型安全的请求层** — `request` 客户端与 `useRequest` Hook，处理竞态与取消
+- **通知中心** — 分组通知、未读状态与 mock SSE 实时流
+- **Settings 表单** — React Router data mode action、Zod 校验与字段错误
+- **错误边界** — 页面级与应用级 fallback，避免白屏
 - **严格工具链** — Oxlint（type-aware）、Oxfmt、Husky 与 lint-staged
 
 ## 技术栈
 
-| 领域        | 选择                                   |
-| ----------- | -------------------------------------- |
-| 框架        | React 19、TypeScript 7                 |
-| 构建        | Vite 8 + Rolldown、React Compiler      |
-| 样式        | Tailwind CSS 4、`tw-animate-css`       |
-| UI          | shadcn `base-nova`、Base UI primitives |
-| 路由        | React Router 8                         |
-| 状态        | Zustand 5                              |
-| Hooks       | Mantine Hooks                          |
-| 数据 / 内容 | TanStack Table 9、TanStack Virtual     |
-| 拖拽        | dnd-kit                                |
-| 图表 / 代码 | Recharts、Shiki                        |
-| 质量        | Oxlint、Oxfmt、Husky、lint-staged      |
+| 领域  | 选择                                   |
+| ----- | -------------------------------------- |
+| 框架  | React 19、TypeScript 7                 |
+| 构建  | Vite 8 + Rolldown、React Compiler      |
+| 样式  | Tailwind CSS 4、`tw-animate-css`       |
+| UI    | shadcn `base-nova`、Base UI primitives |
+| 路由  | React Router 8                         |
+| 状态  | Zustand 5                              |
+| Hooks | Mantine Hooks                          |
+| 质量  | Oxlint、Oxfmt、Husky、lint-staged      |
 
 ## 环境要求
 
@@ -70,25 +74,17 @@ pnpm dev
 
 打开 <http://localhost:5173>，会自动跳转到 `/login`。
 
-## 演示账号
+### 完整示例
 
-| 角色   | 邮箱                 | 密码        | 可访问内容           |
-| ------ | -------------------- | ----------- | -------------------- |
-| 管理员 | `admin@example.com`  | `admin123`  | 全部页面             |
-| 编辑   | `editor@example.com` | `editor123` | 项目、组件库、实时流 |
-| 访客   | `viewer@example.com` | `viewer123` | 项目与基础页面       |
-
-登录态是 **前端 mock**，保存在 `localStorage`，不代表真实安全边界。
-
-登录/登出使用 React Router data mode 的 `action`，受保护布局使用 `loader` 守卫。
-
-权限使用 `resource:action` 字符串（`project:update`、`component:read` 等）。
-
-页面权限在启动时从 `public/permission.json` 加载。管理员可以在 `/permissions` 按角色开关页面权限，覆盖值保存在 `localStorage`，导航和路由守卫会立即生效。真实项目应由后端返回权限列表，并在每个 API 上强制校验。
+```bash
+git clone -b showcase git@github.com:rxxx979/react-ts-shadcn-template.git
+cd react-ts-shadcn-template
+pnpm install
+cp .env.example .env
+pnpm dev
+```
 
 ## 使用这个模板
-
-### tiged
 
 ```bash
 npx tiged rxxx979/react-ts-shadcn-template my-app
@@ -107,22 +103,42 @@ pnpm dev
 pnpm prepare
 ```
 
-如果仓库已经标记为 GitHub Template，也可以直接使用 **Use this template** 按钮。
+## 页面
 
-## 环境变量
+`main` 只保留应用壳层和可复用能力：
 
-复制示例文件：
-
-```bash
-cp .env.example .env
+```text
+/login
+/                  Home
+/settings          data mode 表单 + Zod 校验
+/notifications     分组通知 + mock SSE
+/permissions       运行时权限矩阵（管理员）
 ```
 
-| 变量                | 默认值         | 说明           |
-| ------------------- | -------------- | -------------- |
-| `VITE_APP_NAME`     | `Shadcn Admin` | 应用默认名称   |
-| `VITE_API_BASE_URI` | `/api`         | 请求层基础 URI |
+`/settings` 和 `/permissions` 受权限保护；通知对所有已登录用户开放。
 
-应用名、主题和布局也可以在运行时通过外观面板修改，配置会持久化到 `localStorage`。
+## 演示账号
+
+| 角色   | 邮箱                 | 密码        | 可访问内容       |
+| ------ | -------------------- | ----------- | ---------------- |
+| 管理员 | `admin@example.com`  | `admin123`  | 设置、权限、通知 |
+| 编辑   | `editor@example.com` | `editor123` | 设置、通知       |
+| 访客   | `viewer@example.com` | `viewer123` | 通知             |
+
+登录态是 **前端 mock**，保存在 `localStorage`，不代表真实安全边界。
+
+## 权限
+
+精简版保留两个权限：
+
+```text
+settings:update
+permission:manage
+```
+
+页面权限在启动时从 `public/permission.json` 加载。管理员可以在 `/permissions` 按角色开关权限，覆盖值保存在 `localStorage`，导航和路由守卫会立即生效。
+
+真实项目应由后端返回权限列表，并在每个 API 上强制校验。
 
 ## 脚本
 
@@ -146,22 +162,21 @@ src/
 ├── router/
 │   ├── index.tsx
 │   ├── auth.ts
-│   ├── lazy.tsx
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
 │   ├── Login.tsx
 │   ├── Home.tsx
-│   ├── Projects.tsx
-│   ├── Components.tsx
-│   ├── Stack.tsx
-│   ├── Sse.tsx
+│   ├── Settings.tsx
+│   ├── Notifications.tsx
+│   ├── Permissions.tsx
 │   └── NotFound.tsx
 ├── components/
-│   ├── OverlayScrollbar.tsx
 │   ├── layout/
 │   ├── theme/
+│   ├── notifications/
+│   ├── auth/
 │   └── ui/
 ├── hooks/
 ├── lib/
@@ -173,13 +188,10 @@ src/
 - `components/layout/` — 应用壳层、侧边栏、顶栏、页脚
 - `components/theme/` — 主题与外观面板
 - `components/ui/` — shadcn registry 组件
-- `lib/` — 请求、SSE、项目 mock service、auth 工具、主题工具与共享类型
-- `hooks/` — 请求、SSE、虚拟行与可排序行
-- `stores/` — auth、主题、布局与应用设置的持久化 Zustand store
+- `lib/` — 请求、auth、权限、通知与共享工具
+- `stores/` — auth、主题、布局、应用设置与通知的持久化 Zustand store
 - `router/auth.ts` — data mode 登录/登出 action、auth 与权限守卫
 - `components/auth/Can.tsx` — 按钮级权限门
-- `stores/permission.ts` — 运行时权限配置与本地覆盖
-- `public/permission.json` — 可编辑的页面权限矩阵
 
 ## 主题系统
 
@@ -206,42 +218,6 @@ const projects = await request<Project[]>("/projects", {
 ```
 
 它处理基础 URI、query 序列化、JSON body、`Result` 解包与 `ApiError`。
-
-`src/hooks/use-request.ts` 提供 React Hook，支持三种形式。
-
-### Endpoint descriptor
-
-```ts
-import { defineEndpoint, useRequest } from "@/hooks/use-request";
-
-interface Project {
-  id: string;
-  name: string;
-}
-
-const listProjects = defineEndpoint<Record<string, never>, never, Project[]>({
-  method: "get",
-  url: "/projects",
-});
-
-const { data, loading, refresh } = useRequest(listProjects);
-```
-
-### URL + response 泛型
-
-```ts
-const { data } = useRequest<Project[]>("/projects", {
-  query: { page: 1, pageSize: 20 },
-});
-```
-
-### 自定义 service
-
-```ts
-const { data, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
-```
-
-Hook 管理 `data / loading / error`，忽略过期响应，在卸载时中止在途请求，并暴露 `run`、`refresh`、`cancel` 和 `mutate`。
 
 ## 错误处理
 

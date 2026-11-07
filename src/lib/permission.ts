@@ -13,12 +13,7 @@ interface PagePermission {
 }
 
 const PAGE_PERMISSIONS: readonly PagePermission[] = [
-  { permission: "project:read", label: "项目", description: "项目列表、详情与只读视图" },
-  { permission: "component:read", label: "组件库", description: "组件画廊与主题预览" },
-  { permission: "stack:read", label: "技术栈", description: "依赖与版本信息" },
-  { permission: "stream:read", label: "实时流", description: "SSE 工作台与事件预览" },
   { permission: "settings:update", label: "设置", description: "工作区与个人资料设置" },
-  { permission: "file:upload", label: "文件上传", description: "附件与媒体上传工作台" },
   { permission: "permission:manage", label: "权限管理", description: "修改 public/permission.json 中的角色权限" },
 ];
 

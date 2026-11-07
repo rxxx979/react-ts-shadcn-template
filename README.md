@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  A carefully crafted React admin template with runtime theming,<br />
-  a collapsible sidebar, command palette and a complete component gallery.
+  A focused React admin starter with runtime theming,<br />
+  auth guards, notifications and a clean app shell.
 </p>
 
 <p align="center">
@@ -22,39 +22,40 @@
   <img src="./docs/preview.png" alt="Shadcn Admin Template preview" width="100%" />
 </p>
 
-## Why this template
+## Branches
 
-Most admin templates give you a layout and a handful of pages. This one focuses on the details that make an interface feel finished:
+| Branch     | Purpose                                                        |
+| ---------- | -------------------------------------------------------------- |
+| `main`     | Minimal starter: Home, Settings, Notifications and Permissions |
+| `showcase` | Full demo: Projects, table, Kanban, Upload, Components and SSE |
+
+Use `main` when starting a new app. Browse `showcase` for the full component and interaction examples.
+
+## What is included
 
 - **Runtime theming** — light/dark/system, theme presets, custom primary, surface and accent colors
 - **Layout controls** — sidebar side, variant, collapse mode, width, header style and content width
 - **No theme flash** — a pre-paint bootstrap script applies persisted theme settings before React mounts
 - **Command palette** — search pages and actions with `⌘K`
-- **Component gallery** — a browsable showcase of the included shadcn/Base UI components
-- **CRUD example** — a 1,000-row virtualized project table with search, sorting, filtering, pagination and drag reordering
-- **SSE lab** — a typed streaming demo built on the same request and schema conventions
 - **Auth + permissions** — data-mode login/logout, protected routes, runtime page permissions and button gates
+- **Notifications** — grouped notification center, unread state and a mock SSE stream
+- **Settings form** — React Router data-mode action with Zod validation and field errors
 - **Error boundaries** — page and application fallbacks instead of a blank screen
 - **Validated environment** — app name and API base URI are checked at startup
-- **Thoughtful defaults** — overlay scrollbars, reduced-motion support, responsive layout and keyboard shortcuts
-- **Typed request layer** — a small `request` client and `useRequest` hook with race/cancel handling
 - **Strict tooling** — Oxlint (type-aware), Oxfmt, Husky and lint-staged
 
 ## Tech Stack
 
-| Area           | Choice                                 |
-| -------------- | -------------------------------------- |
-| Framework      | React 19, TypeScript 7                 |
-| Build          | Vite 8 + Rolldown, React Compiler      |
-| Styling        | Tailwind CSS 4, `tw-animate-css`       |
-| UI             | shadcn `base-nova`, Base UI primitives |
-| Routing        | React Router 8                         |
-| State          | Zustand 5                              |
-| Hooks          | Mantine Hooks                          |
-| Data / content | TanStack Table 9, TanStack Virtual     |
-| Drag & drop    | dnd-kit                                |
-| Charts / code  | Recharts, Shiki                        |
-| Quality        | Oxlint, Oxfmt, Husky, lint-staged      |
+| Area      | Choice                                 |
+| --------- | -------------------------------------- |
+| Framework | React 19, TypeScript 7                 |
+| Build     | Vite 8 + Rolldown, React Compiler      |
+| Styling   | Tailwind CSS 4, `tw-animate-css`       |
+| UI        | shadcn `base-nova`, Base UI primitives |
+| Routing   | React Router 8                         |
+| State     | Zustand 5                              |
+| Hooks     | Mantine Hooks                          |
+| Quality   | Oxlint, Oxfmt, Husky, lint-staged      |
 
 ## Requirements
 
@@ -74,9 +75,17 @@ pnpm dev
 
 Open <http://localhost:5173>.
 
-## Use This Template
+### Full demo
 
-### tiged
+```bash
+git clone -b showcase git@github.com:rxxx979/react-ts-shadcn-template.git
+cd react-ts-shadcn-template
+pnpm install
+cp .env.example .env
+pnpm dev
+```
+
+## Use This Template
 
 ```bash
 npx tiged rxxx979/react-ts-shadcn-template my-app
@@ -95,8 +104,6 @@ If you run `pnpm install` before `git init`, the Husky prepare step is skipped. 
 pnpm prepare
 ```
 
-Or use GitHub's **Use this template** button if the repository is marked as a template.
-
 ## Environment Variables
 
 Copy the example file:
@@ -112,9 +119,44 @@ cp .env.example .env
 
 `.env` is ignored by Git. The template ships with `.env.example` only.
 
-Environment values are validated at startup with Zod. Invalid values fail fast instead of surfacing later as a broken request URL.
+Environment values are validated at startup with Zod. Application name, theme and layout can also be changed at runtime from the appearance panel; settings are persisted in `localStorage`.
 
-Application name, theme and layout can also be changed at runtime from the appearance panel; settings are persisted in `localStorage`.
+## Pages
+
+`main` keeps only the application shell and reusable capabilities:
+
+```text
+/login
+/                  Home
+/settings          Data-mode form + Zod validation
+/notifications     Grouped inbox + mock SSE
+/permissions       Runtime permission matrix (admin)
+```
+
+`/settings` and `/permissions` are permission-gated. Notifications are available to every signed-in user.
+
+## Demo Accounts
+
+| Role   | Email                | Password    | Access                               |
+| ------ | -------------------- | ----------- | ------------------------------------ |
+| Admin  | `admin@example.com`  | `admin123`  | Settings, permissions, notifications |
+| Editor | `editor@example.com` | `editor123` | Settings, notifications              |
+| Viewer | `viewer@example.com` | `viewer123` | Notifications                        |
+
+The session is a **frontend mock** stored in `localStorage`. It is not a production security boundary.
+
+## Permissions
+
+Permissions use `resource:action` strings. The starter keeps:
+
+```text
+settings:update
+permission:manage
+```
+
+Page permissions are loaded from `public/permission.json`. Admins can toggle them at `/permissions`; overrides are stored in `localStorage` and apply immediately to navigation and route guards.
+
+In a real app, return permissions from the backend and enforce them on every API call.
 
 ## Scripts
 
@@ -138,22 +180,21 @@ src/
 ├── router/
 │   ├── index.tsx
 │   ├── auth.ts
-│   ├── lazy.tsx
 │   ├── navigation.ts
 │   ├── navigation-context.ts
 │   └── NavigationProvider.tsx
 ├── pages/
 │   ├── Login.tsx
 │   ├── Home.tsx
-│   ├── Projects.tsx
-│   ├── Components.tsx
-│   ├── Stack.tsx
-│   ├── Sse.tsx
+│   ├── Settings.tsx
+│   ├── Notifications.tsx
+│   ├── Permissions.tsx
 │   └── NotFound.tsx
 ├── components/
-│   ├── OverlayScrollbar.tsx
 │   ├── layout/
 │   ├── theme/
+│   ├── notifications/
+│   ├── auth/
 │   └── ui/
 ├── hooks/
 ├── lib/
@@ -165,13 +206,10 @@ src/
 - `components/layout/` — application shell, sidebar, header, footer
 - `components/theme/` — theme and appearance UI
 - `components/ui/` — shadcn registry components
-- `lib/` — request, SSE, project mock service, auth helpers, theme helpers and shared types
-- `hooks/` — request, SSE, virtual rows and sortable rows
-- `stores/` — persisted Zustand stores for auth, theme, layout and app settings
+- `lib/` — request, auth, permissions, notifications and shared helpers
+- `stores/` — persisted Zustand stores for auth, theme, layout, app settings and notifications
 - `router/auth.ts` — data-mode login/logout actions, auth and permission guards
 - `components/auth/Can.tsx` — button-level permission gate
-- `stores/permission.ts` — runtime permission config and local overrides
-- `public/permission.json` — editable page permission matrix
 
 ## Theme System
 
@@ -198,42 +236,6 @@ const projects = await request<Project[]>("/projects", {
 ```
 
 It handles the base URI, query serialization, JSON bodies, `Result` unwrapping and `ApiError`.
-
-`src/hooks/use-request.ts` adds a hook for React. It supports three forms.
-
-### Endpoint descriptor
-
-```ts
-import { defineEndpoint, useRequest } from "@/hooks/use-request";
-
-interface Project {
-  id: string;
-  name: string;
-}
-
-const listProjects = defineEndpoint<Record<string, never>, never, Project[]>({
-  method: "get",
-  url: "/projects",
-});
-
-const { data, loading, refresh } = useRequest(listProjects);
-```
-
-### URL + response type
-
-```ts
-const { data } = useRequest<Project[]>("/projects", {
-  query: { page: 1, pageSize: 20 },
-});
-```
-
-### Custom service
-
-```ts
-const { data, cancel } = useRequest((signal) => request<Project[]>("/projects", { signal }));
-```
-
-The hook manages `data / loading / error`, ignores stale responses, aborts in-flight requests on unmount and exposes `run`, `refresh`, `cancel` and `mutate`.
 
 ## Error Handling
 

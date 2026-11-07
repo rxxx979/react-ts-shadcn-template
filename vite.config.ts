@@ -17,7 +17,7 @@ export default defineConfig({
   build: {
     rolldownOptions: {
       output: {
-        // 按依赖域拆 vendor；图表在 Components 内部单独懒加载，避免和页面 chunk 成环
+        // 按依赖域拆 vendor，避免主 chunk 过大
         codeSplitting: {
           groups: [
             {
@@ -30,12 +30,6 @@ export default defineConfig({
               name: "router",
               test: /node_modules[\\/]react-router[\\/]/,
               priority: 90,
-              includeDependenciesRecursively: false,
-            },
-            {
-              name: "table",
-              test: /node_modules[\\/](@tanstack|@dnd-kit)[\\/]/,
-              priority: 80,
               includeDependenciesRecursively: false,
             },
             {

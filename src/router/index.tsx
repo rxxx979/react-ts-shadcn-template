@@ -1,35 +1,19 @@
-import {
-  BellIcon,
-  BoxesIcon,
-  Columns3Icon,
-  ComponentIcon,
-  FolderKanbanIcon,
-  HomeIcon,
-  RadioIcon,
-  SettingsIcon,
-  ShieldCheckIcon,
-  UploadIcon,
-} from "lucide-react";
+import { BellIcon, HomeIcon, SettingsIcon, ShieldCheckIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { createBrowserRouter, redirect } from "react-router";
-import type { LoaderFunctionArgs, RouteObject } from "react-router";
+import type { RouteObject } from "react-router";
 
 import { Layout } from "@/components/layout/Layout";
 import { RootError } from "@/components/layout/RootError";
 import type { Permission } from "@/lib/auth";
-import { getProject } from "@/lib/projects";
-import type { Project } from "@/lib/projects";
 import { Home } from "@/pages/Home";
-import { Kanban } from "@/pages/Kanban";
 import { Login } from "@/pages/Login";
 import { NotFound } from "@/pages/NotFound";
 import { Notifications } from "@/pages/Notifications";
 import { Permissions } from "@/pages/Permissions";
 import { Settings } from "@/pages/Settings";
-import { Upload } from "@/pages/Upload";
 
 import { loginAction, loginLoader, logoutAction, requireAuth, requirePermission } from "./auth";
-import { ComponentsPage, ProjectDetailPage, ProjectsPage, SsePage, StackPage } from "./lazy";
 import { settingsAction, settingsLoader } from "./settings";
 
 /**
@@ -70,20 +54,7 @@ type RouteItem = RouteObject & {
   children?: RouteItem[];
 };
 
-/**
- * 详情页 loader：校验 project:read 后读取项目
- */
-const projectDetailLoader = async (args: LoaderFunctionArgs): Promise<Project | null | Response> => {
-  const denied = await requirePermission("project:read")(args);
-
-  if (denied) {
-    return denied;
-  }
-
-  return getProject(args.params.id ?? "");
-};
-
-const settingsRouteLoader = async (args: LoaderFunctionArgs) => {
+const settingsRouteLoader = async (args: Parameters<typeof settingsLoader>[0]) => {
   const denied = await requirePermission("settings:update")(args);
   return denied ?? settingsLoader(args);
 };
@@ -128,64 +99,6 @@ const routes: RouteItem[] = [
         },
       },
       {
-        id: "Projects",
-        path: "projects",
-        element: <ProjectsPage />,
-        loader: requirePermission("project:read"),
-        handle: {
-          title: "项目",
-          breadcrumb: "项目",
-          icon: <FolderKanbanIcon />,
-          fluid: true,
-          permission: "project:read",
-        },
-      },
-      {
-        id: "ProjectDetail",
-        path: "projects/:id",
-        element: <ProjectDetailPage />,
-        loader: projectDetailLoader,
-        handle: {
-          breadcrumb: "项目详情",
-        },
-      },
-      {
-        id: "Components",
-        path: "components",
-        element: <ComponentsPage />,
-        loader: requirePermission("component:read"),
-        handle: {
-          title: "组件",
-          breadcrumb: "组件",
-          icon: <ComponentIcon />,
-          permission: "component:read",
-        },
-      },
-      {
-        id: "Stack",
-        path: "stack",
-        element: <StackPage />,
-        loader: requirePermission("stack:read"),
-        handle: {
-          title: "技术栈",
-          breadcrumb: "技术栈",
-          icon: <BoxesIcon />,
-          permission: "stack:read",
-        },
-      },
-      {
-        id: "Sse",
-        path: "sse",
-        element: <SsePage />,
-        loader: requirePermission("stream:read"),
-        handle: {
-          title: "实时流",
-          breadcrumb: "实时流",
-          icon: <RadioIcon />,
-          permission: "stream:read",
-        },
-      },
-      {
         id: "Settings",
         path: "settings",
         element: <Settings />,
@@ -206,30 +119,6 @@ const routes: RouteItem[] = [
           title: "通知",
           breadcrumb: "通知",
           icon: <BellIcon />,
-        },
-      },
-      {
-        id: "Upload",
-        path: "upload",
-        element: <Upload />,
-        loader: requirePermission("file:upload"),
-        handle: {
-          title: "上传",
-          breadcrumb: "上传",
-          icon: <UploadIcon />,
-          permission: "file:upload",
-        },
-      },
-      {
-        id: "Kanban",
-        path: "kanban",
-        element: <Kanban />,
-        loader: requirePermission("project:update"),
-        handle: {
-          title: "看板",
-          breadcrumb: "看板",
-          icon: <Columns3Icon />,
-          permission: "project:update",
         },
       },
       {

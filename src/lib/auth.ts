@@ -6,18 +6,7 @@ type AuthRole = "admin" | "editor" | "viewer";
 /**
  * 细粒度权限
  */
-type Permission =
-  | "project:read"
-  | "project:create"
-  | "project:update"
-  | "project:delete"
-  | "project:export"
-  | "component:read"
-  | "stack:read"
-  | "stream:read"
-  | "permission:manage"
-  | "settings:update"
-  | "file:upload";
+type Permission = "permission:manage" | "settings:update";
 
 /**
  * 已登录用户
@@ -45,7 +34,7 @@ const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     email: "admin@example.com",
     password: "admin123",
     role: "admin",
-    summary: "全部页面与操作",
+    summary: "工作区设置与权限管理",
   },
   {
     id: "user-editor",
@@ -53,7 +42,7 @@ const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     email: "editor@example.com",
     password: "editor123",
     role: "editor",
-    summary: "项目、组件库与实时流",
+    summary: "工作区设置与通知",
   },
   {
     id: "user-viewer",
@@ -61,35 +50,14 @@ const DEMO_ACCOUNTS: readonly DemoAccount[] = [
     email: "viewer@example.com",
     password: "viewer123",
     role: "viewer",
-    summary: "只读项目与基础页面",
+    summary: "首页与通知",
   },
 ];
 
 const ROLE_PERMISSIONS: Record<AuthRole, readonly Permission[]> = {
-  admin: [
-    "project:read",
-    "project:create",
-    "project:update",
-    "project:delete",
-    "project:export",
-    "component:read",
-    "stack:read",
-    "stream:read",
-    "permission:manage",
-    "settings:update",
-    "file:upload",
-  ],
-  editor: [
-    "project:read",
-    "project:create",
-    "project:update",
-    "component:read",
-    "stack:read",
-    "stream:read",
-    "settings:update",
-    "file:upload",
-  ],
-  viewer: ["project:read", "stack:read"],
+  admin: ["permission:manage", "settings:update"],
+  editor: ["settings:update"],
+  viewer: [],
 };
 
 const ROLE_LABELS: Record<AuthRole, string> = {
@@ -99,9 +67,9 @@ const ROLE_LABELS: Record<AuthRole, string> = {
 };
 
 const ROLE_DESCRIPTIONS: Record<AuthRole, string> = {
-  admin: "可访问全部页面和执行所有操作。",
-  editor: "可访问项目、组件库和实时流。",
-  viewer: "只能访问首页、项目和技术栈。",
+  admin: "可管理设置与角色权限。",
+  editor: "可修改工作区设置。",
+  viewer: "仅可访问首页与通知。",
 };
 
 /**
@@ -111,19 +79,7 @@ const ROLE_DESCRIPTIONS: Record<AuthRole, string> = {
  */
 const isAuthRole = (value: unknown): value is AuthRole => value === "admin" || value === "editor" || value === "viewer";
 
-const PERMISSION_LIST: readonly Permission[] = [
-  "project:read",
-  "project:create",
-  "project:update",
-  "project:delete",
-  "project:export",
-  "component:read",
-  "stack:read",
-  "stream:read",
-  "permission:manage",
-  "settings:update",
-  "file:upload",
-];
+const PERMISSION_LIST: readonly Permission[] = ["permission:manage", "settings:update"];
 
 /**
  * 校验权限字符串
